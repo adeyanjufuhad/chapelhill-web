@@ -250,6 +250,7 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
   return (
     <section
       ref={sectionRef}
+      data-hero
       aria-label="Chapelhill: from empty plot to finished home"
       className="theme-oxblood relative h-svh w-full overflow-hidden"
     >
@@ -337,7 +338,7 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
 
 function ReducedMotionHero({ manifest }: { manifest: BuildManifest }) {
   return (
-    <section aria-label="Chapelhill: from empty plot to finished home" className="theme-oxblood relative min-h-svh overflow-hidden">
+    <section data-hero aria-label="Chapelhill: from empty plot to finished home" className="theme-oxblood relative min-h-svh overflow-hidden">
       {manifest.final && (
         // eslint-disable-next-line @next/next/no-img-element -- static fallback, already optimised WebP
         <img src={manifest.final} alt="" className="absolute inset-0 h-full w-full object-cover" />

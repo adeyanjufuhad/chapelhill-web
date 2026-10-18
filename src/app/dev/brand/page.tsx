@@ -24,6 +24,8 @@ const swatches = [
 
 const formatNgn = (n: number) => `₦${(n / 1_000_000).toLocaleString("en-NG")}M`;
 
+export const metadata = { title: "Brand preview", robots: { index: false, follow: false } };
+
 export default function BrandPreview() {
   return (
     <main className="flex-1">
