@@ -1,0 +1,17 @@
+{
+  "source": "video",
+  "desktop": {
+    "count": 150,
+    "width": 1280,
+    "height": 720
+  },
+  "mobile": {
+    "count": 90,
+    "width": 960,
+    "height": 540
+  },
+  "poster": "/build/poster.webp",
+  "final": "/build/final.webp",
+  "video": "/build/build-mobile.mp4",
+  "generatedAt": "2026-10-18T13:22:10.742Z"
+}
