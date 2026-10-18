@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { sql } from "@/lib/db/client";
 
 export type NewsletterState = { status: "idle" | "success" | "error"; message: string };
 
@@ -25,9 +26,17 @@ export async function subscribeToNewsletter(_prev: NewsletterState, formData: Fo
     return { status: "error", message: parsed.error.issues[0]?.message ?? "Please check your email address." };
   }
 
-  // NOT PERSISTED YET: Phase 6 inserts into Supabase `newsletter_subscribers`.
-  if (process.env.NODE_ENV !== "production") {
-    console.info("[newsletter] would subscribe", parsed.data.email, "from", parsed.data.source);
+  if (sql) {
+    try {
+      await sql`
+        insert into newsletter_subscribers (email, source) values (${parsed.data.email}, ${parsed.data.source ?? "site"})
+        on conflict (email) do update set unsubscribed_at = null`;
+    } catch (err) {
+      console.error("[newsletter] save failed:", err instanceof Error ? err.message : err);
+      return { status: "error", message: "Sorry, something went wrong. Please try again." };
+    }
+  } else if (process.env.NODE_ENV !== "production") {
+    console.info("[newsletter] DATABASE_URL not set; would subscribe", parsed.data.email);
   }
 
   return { status: "success", message: "Thank you. You’re on the list." };
