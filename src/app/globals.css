@@ -230,3 +230,43 @@
     stroke-dashoffset: 0;
   }
 }
+
+/* Leaflet map pins and popups (DevelopmentsMap). */
+.ch-map-pin {
+  display: grid;
+  place-items: center;
+}
+.ch-map-pin__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--oxblood);
+  border: 3px solid var(--cream);
+  box-shadow: 0 0 0 1px var(--oxblood), 0 6px 14px -4px rgb(63 17 18 / 0.6);
+}
+.leaflet-container {
+  font-family: var(--font-inter), sans-serif;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 2px;
+}
+.ch-map-popup {
+  display: grid;
+  gap: 2px;
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+.ch-map-popup strong {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.ch-map-popup__note {
+  color: var(--stone-ink);
+  font-size: 0.7rem;
+}
+.leaflet-container a.ch-map-popup__link {
+  margin-top: 6px;
+  color: var(--oxblood);
+  font-weight: 500;
+}
