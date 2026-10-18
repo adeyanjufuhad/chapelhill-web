@@ -2,7 +2,7 @@
 
 Paste this file into any AI coding assistant (ChatGPT, Claude, etc.) together with the original project brief to continue the work. Keep it updated at every commit.
 
-_Last updated: 18 October 2026, on branch `redesign`._
+_Last updated: 18 October 2026, on branch `redesign` (pushed; not yet merged to main)._
 
 ## Project
 A premium real-estate site for **Chapelhill Multicompany International Ltd** (Lagos/Abuja property developer), replacing https://chapelhill.com.ng. Public repo: https://github.com/adeyanjufuhad/chapelhill-web. Next.js 16.4 (App Router, **Cache Components on**: read `node_modules/next/dist/docs/` before using Next APIs), TypeScript, Tailwind v4, shadcn/ui (radix-nova), GSAP + ScrollTrigger, Lenis (desktop only), Leaflet, zod. Windows dev machine; Git Bash available.
@@ -26,11 +26,14 @@ A premium real-estate site for **Chapelhill Multicompany International Ltd** (La
 - `<BuildSequenceHero />` (`src/components/hero/`): manifest-driven canvas scrub, blueprint SVG intro, captions with timings in `build-manifest.ts`, % counter, reduced-motion and MP4 fallbacks. Test page: `/dev/hero`.
 - Phase 4 home page (`src/app/(site)/page.tsx`) and site chrome: Navbar (transparent over `[data-hero]`), restyled React Bits StaggeredMenu for mobile, Footer, floating WhatsApp, newsletter form (server action, **not persisted yet**).
 - Phase 5 shared parts: `PageHeader`, `InquiryForm` plus `submitInquiry` action (inspection mode, **not persisted yet**), `Lightbox`, lazy `DevelopmentsMap` (Leaflet + CARTO tiles), React Bits ScrollStack and Masonry installed.
-- 17 Unsplash photos in `public/images/stock/` with metadata in `src/content/stock.ts`.
+- 17 Unsplash photos in `public/images/stock/` (960px variants in `stock/sm/`) with metadata in `src/content/stock.ts`.
+- **Home redesign done** (branch `redesign`). Type is Inter Tight display + Cormorant italic accents (`.accent-italic` uses `--accent-ink`: oxblood on light, gold-light on dark). `.container-luxe` aligns to 4vw edges. Hero (`BuildSequenceScrub`): cream headline, then an inset window (clip-path measured from a layout slot) expands to full-bleed over the first 16% of a 400% pin, then the frame scrub, then a "Your home, finished" finale. Sections: `Statement` (React Bits ScrollReveal + counters), `Wordmark` (image-filled text), `FeaturedDevelopments` (clean rounded cards), `AbroadZoom` (pinned clip-path zoom + 4 steps), `ServicesFlow` (React Bits FlowingMenu), `TrackerTeaser`, `Testimonials`, `FaqSection`, `ClosingCta` (Lekki bridge sky), oxblood `Footer` with giant wordmark.
+- Navbar tone: sections set `data-nav-tone="light" | "dark"` (pinned sections update it on scroll); elsewhere the bar is solid cream.
+- The React Compiler lint rules are relaxed for `src/components/reactbits/**` only (vendored code; see `eslint.config.mjs`).
 
 ## Next steps
-1. Redesign (branch `redesign`): new type scale (modern sans display + Cormorant italic accents), airy hero with an expanding window around the build scrub, image-filled CHAPELHILL wordmark, scroll-reveal statement, Flowing Menu services, scroll-zoom diaspora section, restyled cards/sections/navbar/footer. Verify with headless captures at desktop 1440 and mobile 390, then commit and push.
-2. Phase 5 pages in the new style: About, Services (ScrollStack process + per-service enquiry), Developments (filters: location/type/status/price, list/map toggle, `useSearchParams` inside `<Suspense>`), Development detail (`generateStaticParams` for the 3 slugs; gallery + lightbox, specs "On request" when null, placeholder payment plans, map, placeholder progress timeline, enquiry, WhatsApp prefilled, virtual inspection form), Compare (2–3 side by side), Calculator (price, deposit %, tenure, rate; ₦/$/£ with placeholder FX; disclaimer), Gallery (Masonry + lightbox), Contact (map, phones, email, form).
+1. Owner review of the redesign, then merge `redesign` into main. When `API_KEY_21ST` is in `.env.local`, use 21st.dev components where they beat the current ones.
+2. Phase 5 pages in the new style (restyle `PageHeader` to the light airy look first): About, Services (ScrollStack process + per-service enquiry), Developments (filters: location/type/status/price, list/map toggle, `useSearchParams` inside `<Suspense>`), Development detail (`generateStaticParams` for the 3 slugs; gallery + lightbox, specs "On request" when null, placeholder payment plans, map, placeholder progress timeline, enquiry, WhatsApp prefilled, virtual inspection form), Compare (2–3 side by side), Calculator (price, deposit %, tenure, rate; ₦/$/£ with placeholder FX; disclaimer), Gallery (Masonry + lightbox), Contact (map, phones, email, form).
 3. Phase 6: ask about the Supabase MCP, then schema + RLS (see the plan in the Phase 0 notes), admin dashboard, persist inquiries and newsletter, Resend notifications, FX rates in the admin.
 4. Phase 7: diaspora portal (magic link). Phase 8: SEO/JSON-LD/sitemap, GA4/Hotjar/Tawk, Lighthouse ≥85 on mobile, accessibility, Vercel deploy.
 
