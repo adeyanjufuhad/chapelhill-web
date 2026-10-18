@@ -578,7 +578,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-socials-link:hover { color: var(--oxblood); }
 .sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; text-transform: uppercase; }
 .sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.sm-scope .sm-panel-item { position: relative; color: var(--ink); font-family: var(--font-cormorant), serif; font-weight: 500; font-size: clamp(2.4rem, 11vw, 3.25rem); cursor: pointer; line-height: 1.1; letter-spacing: -0.01em; text-transform: none; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
+.sm-scope .sm-panel-item { position: relative; color: var(--ink); font-family: var(--font-geist), sans-serif; font-weight: 500; font-size: clamp(2.2rem, 10vw, 3rem); cursor: pointer; line-height: 1.1; letter-spacing: -0.04em; text-transform: none; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
 .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
 .sm-scope .sm-panel-item:hover, .sm-scope .sm-panel-item:focus-visible { color: var(--oxblood); }
 .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }

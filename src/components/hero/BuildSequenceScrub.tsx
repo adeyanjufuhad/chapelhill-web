@@ -12,7 +12,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 type Mode = "frames" | "video" | "static";
 
-const EAGER_FRAMES = 10;
+const EAGER_FRAMES = 4;
+/** The remaining frames stream in only once the visitor starts interacting (saves mobile data, keeps LCP clean). */
+const START_EVENTS = ["scroll", "wheel", "pointerdown", "keydown", "touchstart"] as const;
 const IDLE_BATCH = 6;
 const INTRO_MIN_MS = 1400;
 const MAX_DPR = 2;
@@ -119,6 +121,7 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
     let idleHandle = 0;
     let rafHandle = 0;
     let lastProgress = 0;
+    let removeStartListeners = () => {};
     // Window start insets (px), measured from the layout slot.
     let inset = { top: 0, right: 0, bottom: 0, left: 0, radius: 28 };
     // How far the window's centre sits below the section's centre, so the
@@ -267,7 +270,14 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
             idleHandle = idle(pump);
           });
         };
-        idleHandle = idle(pump);
+        const start = () => {
+          START_EVENTS.forEach((e) => window.removeEventListener(e, start));
+          if (!cancelled) idleHandle = idle(pump);
+        };
+        // Already scrolled (e.g. a refresh mid-page): start now.
+        if (window.scrollY > 0) start();
+        else START_EVENTS.forEach((e) => window.addEventListener(e, start, { passive: true, once: true }));
+        removeStartListeners = () => START_EVENTS.forEach((e) => window.removeEventListener(e, start));
       });
     } else {
       finishIntro();
@@ -295,11 +305,15 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
       },
     });
     update(0);
-    ScrollTrigger.sort();
-    ScrollTrigger.refresh();
+    // Re-measure once after load (fonts, images) instead of forcing layout during hydration.
+    const refreshAfterLoad = () => ScrollTrigger.refresh();
+    if (document.readyState === "complete") requestAnimationFrame(refreshAfterLoad);
+    else window.addEventListener("load", refreshAfterLoad, { once: true });
 
     return () => {
       cancelled = true;
+      removeStartListeners();
+      window.removeEventListener("load", refreshAfterLoad);
       window.removeEventListener("resize", resize);
       if ("cancelIdleCallback" in window) window.cancelIdleCallback(idleHandle);
       else clearTimeout(idleHandle);
@@ -359,8 +373,8 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
 
         {/* Soft white mist across the top of the window that parts as it opens. */}
         <div ref={mistRef} aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div className="absolute top-[34%] left-[-12%] h-[18%] w-[60%] rounded-full bg-white/35 blur-3xl" />
-          <div className="absolute top-[32%] right-[-14%] h-[16%] w-[55%] rounded-full bg-white/30 blur-3xl" />
+          <div className="absolute top-[28%] left-[-15%] h-[30%] w-[70%] bg-[radial-gradient(closest-side,rgb(255_255_255/0.4),transparent)]" />
+          <div className="absolute top-[26%] right-[-18%] h-[28%] w-[65%] bg-[radial-gradient(closest-side,rgb(255_255_255/0.32),transparent)]" />
         </div>
 
         {/* Readability washes, captions and counter appear once the window is open. */}

@@ -66,8 +66,8 @@ export function SupportCards() {
                     {c.body}
                   </p>
                 </div>
-                <PillLink href={c.href} variant="dark" size="sm" magnetic={false} className="self-start" aria-label={`Learn more about ${c.title}`}>
-                  Learn more
+                <PillLink href={c.href} variant="dark" size="sm" magnetic={false} className="self-start">
+                  Learn more<span className="sr-only"> about {c.title.toLowerCase()}</span>
                 </PillLink>
               </article>
             </Reveal>

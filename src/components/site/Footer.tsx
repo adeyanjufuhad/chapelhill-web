@@ -71,12 +71,18 @@ export async function Footer() {
           </div>
         </div>
 
-        <p
-          aria-hidden="true"
-          className="font-display text-cream/[0.07] mt-16 -mb-6 text-center text-[18vw] leading-[0.8] font-semibold tracking-[-0.065em] select-none sm:-mb-10"
-        >
-          Chapelhill
-        </p>
+        <svg aria-hidden="true" viewBox="0 0 1000 190" className="mt-16 -mb-4 block w-full select-none sm:-mb-8">
+          <text
+            x="500"
+            y="160"
+            textAnchor="middle"
+            fill="currentColor"
+            className="text-cream/[0.07] font-display"
+            style={{ fontSize: 214, fontWeight: 600, letterSpacing: "-0.065em" }}
+          >
+            Chapelhill
+          </text>
+        </svg>
 
         <div className="border-border text-muted-foreground relative mt-0 flex flex-col gap-4 border-t pt-8 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>

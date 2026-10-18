@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { useNear } from "@/components/motion/useNear";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
@@ -31,10 +32,13 @@ export function AbroadZoom() {
   const imageRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
+  // Set up the pin only as the section approaches (keeps first load light).
+  const near = useNear(sectionRef, "150% 0px");
+
   useEffect(() => {
     const section = sectionRef.current;
     const frame = frameRef.current;
-    if (!section || !frame || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!near || !section || !frame || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
     const tl = gsap.timeline({
@@ -61,7 +65,7 @@ export function AbroadZoom() {
       tl.scrollTrigger?.kill();
       tl.kill();
     };
-  }, []);
+  }, [near]);
 
   return (
     <section aria-labelledby="abroad-heading">

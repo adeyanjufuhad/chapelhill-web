@@ -13,7 +13,6 @@ Third-party UI components used in this project, with source and license. Every i
 | React Bits: Masonry (TS + Tailwind, copied manually; hugeicons swapped for Lucide) | Gallery | https://reactbits.dev/components/masonry | MIT + Commons Clause |
 | React Bits: Scroll Velocity (TS + Tailwind) | Kinetic marquee bands on the home page | https://reactbits.dev/text-animations/scroll-velocity | MIT + Commons Clause |
 | React Bits: Scroll Reveal (TS + Tailwind) | Home statement text reveal | https://reactbits.dev/text-animations/scroll-reveal | MIT + Commons Clause |
-| React Bits: Split Text (TS + Tailwind) | Word-by-word heading reveals (`SplitHeading`) | https://reactbits.dev/text-animations/split-text | MIT + Commons Clause |
 
 ## Libraries
 | Library | Use | License |

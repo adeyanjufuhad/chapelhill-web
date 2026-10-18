@@ -1,11 +1,9 @@
-"use client";
-
-import SplitText from "@/components/reactbits/SplitText";
+import { Fragment, type CSSProperties } from "react";
 
 /**
  * Section heading whose words rise through a mask as it enters view
- * (React Bits SplitText, DESIGN.md §7), with an optional Cormorant italic
- * accent phrase that fades in after the words.
+ * (DESIGN.md §7). Plain markup with real text (SEO, screen readers, LCP);
+ * the shared `RevealObserver` flips `data-in` and CSS does the motion.
  */
 export function SplitHeading({
   text,
@@ -22,34 +20,30 @@ export function SplitHeading({
   id?: string;
   className?: string;
 }) {
+  const words = text.split(" ");
+  const accentWords = accent ? accent.split(" ") : [];
+
   return (
-    <Tag id={id} className={className}>
-      <SplitText
-        text={text}
-        tag="span"
-        splitType="words"
-        effect="rise"
-        textAlign="left"
-        delay={70}
-        duration={1}
-        rootMargin="-60px"
-        className="pb-[0.08em] align-bottom"
-      />
+    <Tag id={id} data-split className={className}>
+      {/* Spaces sit between the inline-block words: inside one they collapse. */}
+      {words.map((w, i) => (
+        <Fragment key={`w${i}`}>
+          <span className="split-word">
+            <span style={{ "--i": i } as CSSProperties}>{w}</span>
+          </span>{" "}
+        </Fragment>
+      ))}
       {accent && (
-        <>
-          {" "}
-          <SplitText
-            text={accent}
-            tag="span"
-            splitType="words"
-            effect="fade"
-            textAlign="left"
-            delay={90}
-            duration={1.2}
-            rootMargin="-60px"
-            className={`accent-italic pb-[0.12em] align-bottom ${accentBlock ? "block" : ""}`}
-          />
-        </>
+        <span className={`accent-italic ${accentBlock ? "block" : ""}`}>
+          {accentWords.map((w, i) => (
+            <Fragment key={`a${i}`}>
+              <span className="split-word">
+                <span style={{ "--i": words.length + i } as CSSProperties}>{w}</span>
+              </span>
+              {i < accentWords.length - 1 ? " " : ""}
+            </Fragment>
+          ))}
+        </span>
       )}
     </Tag>
   );

@@ -54,10 +54,10 @@ export function Navbar() {
       <header data-site-nav className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4">
         <div
           className={cn(
-            "pointer-events-auto flex w-full items-center justify-between gap-6 rounded-full border backdrop-blur-xl transition-[max-width,background-color,border-color,color,box-shadow,padding] duration-700 ease-[var(--ease-luxe)]",
+            "pointer-events-auto flex w-full items-center justify-between gap-6 rounded-full border transition-[max-width,background-color,border-color,color,box-shadow,padding] duration-700 ease-[var(--ease-luxe)] md:backdrop-blur-xl",
             "shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_1px_2px_rgb(26_26_26/0.04),0_18px_40px_-24px_rgb(63_17_18/0.35)]",
             scrolled ? "max-w-[1120px] py-1.5 pr-1.5 pl-5" : "max-w-[1240px] py-2 pr-2 pl-6",
-            dark ? "border-cream/15 bg-oxblood-deep/45 text-cream" : "border-ink/10 bg-cream/70 text-ink",
+            dark ? "border-cream/15 bg-oxblood-deep/90 text-cream md:bg-oxblood-deep/45" : "border-ink/10 bg-cream/95 text-ink md:bg-cream/70",
           )}
         >
           <Logo reversed={dark} />
