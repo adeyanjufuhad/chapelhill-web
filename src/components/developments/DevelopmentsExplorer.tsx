@@ -7,7 +7,7 @@ import { LayoutGrid, Map as MapIcon, RotateCcw } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { DevelopmentCard } from "@/components/site/DevelopmentCard";
 import { selectClass } from "@/components/site/InquiryForm";
-import { developments, statusLabel, type DevelopmentStatus } from "@/content/developments";
+import { statusLabel, type Development, type DevelopmentStatus } from "@/content/developments";
 import { formatNgnShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -17,17 +17,29 @@ const DevelopmentsMap = dynamic(() => import("@/components/site/DevelopmentsMap"
 });
 
 const PRICE_STEP = 10_000_000;
-const PRICE_MAX = Math.ceil(Math.max(...developments.map((d) => d.priceFromNgn)) / 100_000_000) * 100_000_000;
-const cities = ["all", ...new Set(developments.map((d) => d.city))];
-const types = ["all", ...new Set(developments.map((d) => d.propertyType))];
 const statuses: ("all" | DevelopmentStatus)[] = ["all", "for_sale", "coming_soon", "sold_out"];
 
-export function DevelopmentsExplorer() {
+export function DevelopmentsExplorer({ developments }: { developments: Development[] }) {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [, startTransition] = useTransition();
+  const replace = (qs: string) => startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false }));
+  return <ExplorerView developments={developments} params={params} onReplace={replace} />;
+}
 
+function ExplorerView({
+  developments,
+  params,
+  onReplace,
+}: {
+  developments: Development[];
+  params: URLSearchParams | ReturnType<typeof useSearchParams>;
+  onReplace: (qs: string) => void;
+}) {
+  const PRICE_MAX = Math.max(100_000_000, Math.ceil(Math.max(...developments.map((d) => d.priceFromNgn)) / 100_000_000) * 100_000_000);
+  const cities = ["all", ...new Set(developments.map((d) => d.city))];
+  const types = ["all", ...new Set(developments.map((d) => d.propertyType))];
   const city = params.get("city") ?? "all";
   const type = params.get("type") ?? "all";
   const status = (params.get("status") ?? "all") as "all" | DevelopmentStatus;
@@ -43,8 +55,7 @@ export function DevelopmentsExplorer() {
     }
     if (Number(next.get("min")) === 0) next.delete("min");
     if (Number(next.get("max")) === PRICE_MAX) next.delete("max");
-    const qs = next.toString();
-    startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false }));
+    onReplace(next.toString());
   };
 
   const results = useMemo(
@@ -57,7 +68,7 @@ export function DevelopmentsExplorer() {
           d.priceFromNgn >= minPrice &&
           d.priceFromNgn <= maxPrice,
       ),
-    [city, type, status, minPrice, maxPrice],
+    [developments, city, type, status, minPrice, maxPrice],
   );
 
   const filtered = city !== "all" || type !== "all" || status !== "all" || minPrice > 0 || maxPrice < PRICE_MAX;
@@ -223,15 +234,11 @@ function Pill({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
-/** Static fallback rendered into the prerendered shell before search params are read. */
-export function DevelopmentsGridFallback() {
-  return (
-    <ul className="mt-6 grid gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-      {developments.map((d) => (
-        <li key={d.slug}>
-          <DevelopmentCard development={d} />
-        </li>
-      ))}
-    </ul>
-  );
+/**
+ * Prerendered shell shown before search params are read: the same filter bar
+ * and grid at their default state, so swapping in the live explorer doesn't
+ * shift the page.
+ */
+export function DevelopmentsGridFallback({ developments }: { developments: Development[] }) {
+  return <ExplorerView developments={developments} params={new URLSearchParams()} onReplace={() => {}} />;
 }

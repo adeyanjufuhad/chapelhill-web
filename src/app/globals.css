@@ -144,10 +144,10 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: var(--font-inter);
-  /* Modern grotesk display (reference direction); Cormorant italic for accents. */
-  --font-display: var(--font-inter-tight);
-  --font-heading: var(--font-inter-tight);
+  /* Geist for display and UI (DESIGN.md §3); Cormorant italic for accents. */
+  --font-sans: var(--font-geist);
+  --font-display: var(--font-geist);
+  --font-heading: var(--font-geist);
   --font-serif: var(--font-cormorant);
 
   --radius-sm: calc(var(--radius) * 0.6);
@@ -156,7 +156,7 @@
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
 
-  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-luxe: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @layer base {
@@ -166,6 +166,43 @@
   html {
     @apply font-sans;
     -webkit-text-size-adjust: 100%;
+    /* Reserve the scrollbar from first paint so pinned sections measure the final width. */
+    scrollbar-gutter: stable;
+    overflow-x: clip;
+  }
+  body {
+    overflow-x: clip;
+  }
+  @media (pointer: fine) {
+    html {
+      overscroll-behavior: none;
+    }
+  }
+  a,
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea,
+  label {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* iOS Safari zooms into inputs under 16px. */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+  select {
+    background-color: var(--ivory);
+    color: var(--ink);
+  }
+  /* Lighter line icons (DESIGN.md §4). */
+  svg.lucide {
+    stroke-width: 1.5;
   }
   body {
     @apply bg-background text-foreground;
@@ -281,4 +318,69 @@
 .leaflet-container .ch-map-tiles,
 .leaflet-container img.ch-map-tiles {
   filter: grayscale(1) sepia(0.18) contrast(0.92) brightness(1.04);
+}
+
+/* Paper grain: fixed, non-interactive, 3% (DESIGN.md §6). Desktop only (paint cost on phones). */
+.grain {
+  display: none;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* SplitHeading word reveal (DESIGN.md §7). Words start visible; once the
+   script runs it marks the page ready and hides them until in view. */
+.split-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.split-word > span {
+  display: inline-block;
+  transition: transform 900ms var(--ease-luxe);
+  transition-delay: calc(var(--i, 0) * 65ms);
+}
+html.js [data-split]:not([data-in]) .split-word > span {
+  transform: translateY(108%);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-split]:not([data-in]) .split-word > span {
+    transform: none;
+  }
+}
+
+/* Reveal (DESIGN.md §7). Content is visible without JS; with JS it waits for
+   the shared observer. Blur only where it is cheap (desktop). */
+[data-reveal] {
+  transition:
+    opacity 900ms var(--ease-luxe),
+    transform 900ms var(--ease-luxe),
+    filter 900ms var(--ease-luxe);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html.js [data-reveal]:not([data-in]) {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+@media (min-width: 768px) and (pointer: fine) {
+  html.js [data-reveal]:not([data-in]) {
+    filter: blur(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal]:not([data-in]) {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@media (pointer: fine) and (min-width: 1024px) {
+  .grain {
+    display: block;
+  }
 }

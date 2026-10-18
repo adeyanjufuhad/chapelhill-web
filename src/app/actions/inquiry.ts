@@ -1,6 +1,8 @@
 "use server";
 
 import { z } from "zod";
+import { sql } from "@/lib/db/client";
+import { notifySales } from "@/lib/email";
 
 export type InquiryTopic = "general" | "development" | "service" | "diaspora" | "inspection" | "calculator";
 
@@ -62,15 +64,66 @@ export async function submitInquiry(_prev: InquiryState, formData: FormData): Pr
     return { status: "error", message: "Please check the highlighted fields.", fieldErrors };
   }
 
-  // NOT PERSISTED YET: Phase 6 inserts into Supabase `inquiries` / `inspection_requests`
-  // and sends a notification to the sales inbox with Resend.
-  if (process.env.NODE_ENV !== "production") {
-    const data: Partial<typeof parsed.data> = { ...parsed.data };
-    delete data.company;
-    console.info("[inquiry] would save", data);
+  const d = parsed.data;
+  const inspection = d.topic === "inspection";
+  const blank = (v?: string) => (v ? v : null);
+
+  let saved = false;
+  if (sql) {
+    try {
+      // Light abuse guard: at most 5 enquiries per email address in 10 minutes.
+      const [{ recent }] = (await sql`
+        select count(*)::int as recent from inquiries
+        where email = ${d.email} and created_at > now() - interval '10 minutes'`) as { recent: number }[];
+      if (recent >= 5) {
+        return { status: "error", message: "We’ve received several messages from you already. We’ll be in touch shortly." };
+      }
+
+      await sql`
+        insert into inquiries (topic, development, service, name, email, phone, country, message, preferred_contact, payload)
+        values (${d.topic}, ${blank(d.development)}, ${blank(d.service)}, ${d.name}, ${d.email}, ${blank(d.phone)},
+                ${blank(d.country)}, ${blank(d.message)}, ${d.preferredContact},
+                ${JSON.stringify({ inspectionKind: d.inspectionKind || null, preferredDate: d.preferredDate || null, preferredTime: d.preferredTime || null, timezone: d.timezone || null })})`;
+
+      if (inspection) {
+        await sql`
+          insert into inspection_requests (development_id, development_name, kind, preferred_date, preferred_time, timezone, name, email, phone, message)
+          values ((select id from developments where name = ${blank(d.development)} limit 1), ${blank(d.development)},
+                  ${d.inspectionKind || "virtual"}, ${blank(d.preferredDate)}, ${blank(d.preferredTime)}, ${blank(d.timezone)},
+                  ${d.name}, ${d.email}, ${blank(d.phone)}, ${blank(d.message)})`;
+      }
+      saved = true;
+    } catch (err) {
+      console.error("[inquiry] save failed:", err instanceof Error ? err.message : err);
+    }
   }
 
-  const inspection = parsed.data.topic === "inspection";
+  const emailed = await notifySales(
+    inspection ? `Virtual inspection request: ${d.development ?? "a development"}` : `New ${d.topic} enquiry from ${d.name}`,
+    {
+      Topic: d.topic,
+      Development: d.development,
+      Service: d.service,
+      Name: d.name,
+      Email: d.email,
+      "Phone / WhatsApp": d.phone,
+      Country: d.country,
+      "Preferred contact": d.preferredContact,
+      "Inspection type": inspection ? d.inspectionKind : undefined,
+      "Preferred date": d.preferredDate,
+      "Preferred time": d.preferredTime ? `${d.preferredTime} (${d.timezone || "timezone unknown"})` : undefined,
+      Message: d.message,
+    },
+    d.email,
+  );
+
+  if (!saved && !emailed && sql) {
+    return {
+      status: "error",
+      message: "Sorry, we couldn’t send your message just now. Please try again or message us on WhatsApp.",
+    };
+  }
+
   return {
     status: "success",
     message: inspection

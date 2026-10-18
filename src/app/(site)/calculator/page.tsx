@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PaymentCalculator } from "@/components/developments/PaymentCalculator";
 import { PageHeader } from "@/components/site/PageHeader";
+import { getDevelopments, getFxRates } from "@/lib/db/public";
 
 export const metadata: Metadata = {
   title: "Payment calculator",
   description: "Estimate deposits and monthly repayments for a Chapelhill home in naira, US dollars or pounds.",
 };
 
-export default function CalculatorPage() {
+export default async function CalculatorPage() {
+  const [developments, fx] = await Promise.all([getDevelopments(), getFxRates()]);
   return (
     <>
       <PageHeader
@@ -20,7 +22,7 @@ export default function CalculatorPage() {
       />
       <section aria-label="Calculator" className="container-luxe pt-4 pb-24 sm:pb-36">
         <Suspense fallback={<div className="bg-stone h-[640px] animate-pulse rounded-[24px]" />}>
-          <PaymentCalculator />
+          <PaymentCalculator developments={developments} fx={fx} />
         </Suspense>
         <p className="text-muted-foreground mt-12 max-w-3xl text-xs leading-relaxed">
           <strong className="text-ink font-medium">Disclaimer.</strong> This calculator gives illustrative estimates only and

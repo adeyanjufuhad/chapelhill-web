@@ -3,7 +3,7 @@ import { ClosingCta } from "@/components/home/ClosingCta";
 import { ProjectGallery, type GalleryProject } from "@/components/developments/ProjectGallery";
 import { PageHeader } from "@/components/site/PageHeader";
 import { PlaceholderTag } from "@/components/site/Placeholder";
-import { developments } from "@/content/developments";
+import { getDevelopments } from "@/lib/db/public";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 
 // Client imagery only. Stock photography and the build-sequence video frames
 // are never shown here, because this page presents Chapelhill's own projects.
-const projects: GalleryProject[] = developments.flatMap((d) =>
+const toProjects = (developments: Awaited<ReturnType<typeof getDevelopments>>): GalleryProject[] =>
+  developments.flatMap((d) =>
   d.images.map((im, i) => ({
     id: `${d.slug}-${i}`,
     src: im.src,
@@ -25,7 +26,8 @@ const projects: GalleryProject[] = developments.flatMap((d) =>
   })),
 );
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const projects = toProjects(await getDevelopments());
   return (
     <>
       <PageHeader

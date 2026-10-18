@@ -11,15 +11,15 @@ Third-party UI components used in this project, with source and license. Every i
 | React Bits: Staggered Menu (TS + Tailwind) | Mobile navigation, restyled to cream and oxblood with serif items; added `inert`, Escape to close and client-side links | https://reactbits.dev/components/staggered-menu | MIT + Commons Clause |
 | React Bits: Scroll Stack (TS + Tailwind) | Services process steps | https://reactbits.dev/components/scroll-stack | MIT + Commons Clause |
 | React Bits: Masonry (TS + Tailwind, copied manually; hugeicons swapped for Lucide) | Gallery | https://reactbits.dev/components/masonry | MIT + Commons Clause |
-| React Bits: Flowing Menu (TS + Tailwind, copied manually; hugeicons swapped for Lucide) | Home services rows with image marquees | https://reactbits.dev/components/flowing-menu | MIT + Commons Clause |
+| React Bits: Scroll Velocity (TS + Tailwind) | Kinetic marquee bands on the home page | https://reactbits.dev/text-animations/scroll-velocity | MIT + Commons Clause |
 | React Bits: Scroll Reveal (TS + Tailwind) | Home statement text reveal | https://reactbits.dev/text-animations/scroll-reveal | MIT + Commons Clause |
-| React Bits: Split Text (TS + Tailwind) | Installed for section headings; not yet used | https://reactbits.dev/text-animations/split-text | MIT + Commons Clause |
 
 ## Libraries
 | Library | Use | License |
 |---|---|---|
 | GSAP + ScrollTrigger | Scroll-driven build hero, reveals | GSAP Standard License (free for all uses since 3.13) |
 | Lenis | Desktop smooth scroll | MIT |
+| motion | Required by React Bits Scroll Velocity | MIT |
 | zod | Form validation | MIT |
 | sharp | Frame encoding scripts | Apache-2.0 |
 | ffmpeg-static / ffprobe-static | Video frame extraction fallback binaries | GPL-3.0 (binaries used at build time only, not shipped) |
@@ -27,9 +27,13 @@ Third-party UI components used in this project, with source and license. Every i
 ## Fonts
 | Font | License |
 |---|---|
-| Inter Tight (display) | SIL Open Font License 1.1 |
+| Geist + Geist Mono (display and UI) | SIL Open Font License 1.1 |
 | Cormorant Garamond (italic accents) | SIL Open Font License 1.1 |
-| Inter | SIL Open Font License 1.1 |
+
+## Design guidance
+- Vercel Web Interface Guidelines, https://vercel.com/design/guidelines
+- Taste Skill (MIT), https://github.com/tasteskill/tasteskill — rules adapted into `DESIGN.md`
+- DESIGN.md format from VoltAgent awesome-design-md, https://github.com/VoltAgent/awesome-design-md
 
 ## Imagery
 - Development photos, renders and team photos: supplied by Chapelhill Multicompany International Ltd (from chapelhill.com.ng).

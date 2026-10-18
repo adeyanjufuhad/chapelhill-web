@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { PlaceholderTag } from "@/components/site/Placeholder";
-import { testimonials } from "@/content/placeholders";
+import type { Testimonial } from "@/lib/db/public";
 import { cn } from "@/lib/utils";
 
-export function Testimonials() {
+export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
+  const anyPlaceholder = testimonials.some((t) => t.placeholder);
   const [active, setActive] = useState(0);
   const go = (delta: number) => setActive((i) => (i + delta + testimonials.length) % testimonials.length);
 
@@ -16,7 +17,7 @@ export function Testimonials() {
         <div className="flex items-center justify-between gap-6">
           <div>
             <p className="eyebrow">
-              In their words <PlaceholderTag className="ml-2" label="Placeholder quotes" />
+              In their words {anyPlaceholder && <PlaceholderTag className="ml-2" label="Placeholder quotes" />}
             </p>
             <h2 id="testimonials-heading" className="sr-only">
               Testimonials
@@ -64,7 +65,7 @@ export function Testimonials() {
                 <span aria-hidden="true" className="rule-gold" />
                 <span>
                   {t.name}
-                  <span className="text-muted-foreground"> · {t.location}</span>
+                  {t.location && <span className="text-muted-foreground"> · {t.location}</span>}
                 </span>
               </figcaption>
             </figure>

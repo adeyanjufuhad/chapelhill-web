@@ -12,18 +12,19 @@ import { EnquiryDialog } from "@/components/site/EnquiryDialog";
 import { InquiryForm } from "@/components/site/InquiryForm";
 import { PlaceholderTag } from "@/components/site/Placeholder";
 import { WhatsAppIcon } from "@/components/site/WhatsAppIcon";
-import { developments, getDevelopment, statusLabel } from "@/content/developments";
-import { paymentPlans, progressPlaceholder } from "@/content/placeholders";
+import { statusLabel } from "@/content/developments";
+import { getDevelopmentBySlug, getDevelopments, getPaymentPlans, getProgress } from "@/lib/db/public";
 import { formatBeds, formatNgnShort } from "@/lib/format";
 import { whatsappLink } from "@/lib/whatsapp";
+import { developmentSchema, jsonLd } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return developments.map((d) => ({ slug: d.slug }));
+export async function generateStaticParams() {
+  return (await getDevelopments()).map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/developments/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const d = getDevelopment(slug);
+  const d = await getDevelopmentBySlug(slug);
   if (!d) return {};
   return {
     title: `${d.name}, ${d.area}`,
@@ -47,7 +48,7 @@ export default function DevelopmentPage({ params }: PageProps<"/developments/[sl
 
 function DetailSkeleton() {
   return (
-    <section data-nav-tone="light" className="bg-cream">
+    <section data-nav-tone="light" className="bg-cream min-h-[100svh]">
       <div className="container-luxe animate-pulse pt-36 pb-12">
         <div className="bg-stone h-4 w-40 rounded-full" />
         <div className="bg-stone mt-6 h-20 w-2/3 rounded-2xl" />
@@ -59,10 +60,12 @@ function DetailSkeleton() {
 
 async function DevelopmentDetail({ params }: { params: PageProps<"/developments/[slug]">["params"] }) {
   const { slug } = await params;
-  const d = getDevelopment(slug);
+  const d = await getDevelopmentBySlug(slug);
   if (!d) notFound();
 
-  const others = developments.filter((o) => o.slug !== d.slug).slice(0, 2);
+  const [all, paymentPlans, progress] = await Promise.all([getDevelopments(), getPaymentPlans(d.id), getProgress(d.id)]);
+  const progressPlaceholder = progress.updates;
+  const others = all.filter((o) => o.slug !== d.slug).slice(0, 2);
   const waMessage = `Hello Chapelhill, I’m interested in ${d.name} (${d.area}, ${d.city}). Please send me the price list and payment plans.`;
   const latest = progressPlaceholder[0];
 
@@ -77,6 +80,7 @@ async function DevelopmentDetail({ params }: { params: PageProps<"/developments/
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(developmentSchema(d))} />
       <section data-nav-tone="light" className="bg-cream">
         <div className="container-luxe pt-28 pb-10 sm:pt-36">
           <nav aria-label="Breadcrumb" className="mb-8">
@@ -157,7 +161,7 @@ async function DevelopmentDetail({ params }: { params: PageProps<"/developments/
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="eyebrow">
-                  Payment plans <PlaceholderTag className="ml-2" label="To be confirmed" />
+                  Payment plans {paymentPlans.some((p) => p.placeholder) && <PlaceholderTag className="ml-2" label="To be confirmed" />}
                 </p>
                 <h2 id="plans-heading" className="mt-4 text-[clamp(2rem,4vw,3.4rem)] leading-[1] tracking-[-0.045em]">
                   Pay your way.
@@ -187,7 +191,7 @@ async function DevelopmentDetail({ params }: { params: PageProps<"/developments/
 
           <section aria-labelledby="progress-heading">
             <p className="eyebrow">
-              Construction progress <PlaceholderTag className="ml-2" label="Illustrative" />
+              Construction progress {progress.placeholder && <PlaceholderTag className="ml-2" label="Illustrative" />}
             </p>
             <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
               <h2 id="progress-heading" className="text-[clamp(2rem,4vw,3.4rem)] leading-[1] tracking-[-0.045em]">

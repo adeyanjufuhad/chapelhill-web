@@ -5,12 +5,11 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Check, Minus, Plus, X } from "lucide-react";
 import { selectClass } from "@/components/site/InquiryForm";
-import { developments, getDevelopment, statusLabel, type Development } from "@/content/developments";
+import { statusLabel, type Development } from "@/content/developments";
 import { formatBeds, formatNgnShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const MAX = 3;
-const allAmenities = [...new Set(developments.flatMap((d) => d.amenities))];
 
 const rows: { label: string; value: (d: Development) => React.ReactNode }[] = [
   { label: "Location", value: (d) => `${d.area}, ${d.city}` },
@@ -27,7 +26,9 @@ function OnRequest() {
   return <span className="text-muted-foreground">On request</span>;
 }
 
-export function CompareTable() {
+export function CompareTable({ developments }: { developments: Development[] }) {
+  const allAmenities = [...new Set(developments.flatMap((d) => d.amenities))];
+  const getDevelopment = (slug: string) => developments.find((d) => d.slug === slug);
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();

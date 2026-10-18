@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useNear } from "@/components/motion/useNear";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -13,9 +14,11 @@ gsap.registerPlugin(ScrollTrigger);
 export function Wordmark({ image, imageSmall }: { image: string; imageSmall: string }) {
   const ref = useRef<HTMLParagraphElement>(null);
 
+  const near = useNear(ref);
+
   useEffect(() => {
     const el = ref.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!near || !el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const tween = gsap.fromTo(
       el,
       { backgroundPosition: "50% 20%" },
@@ -29,7 +32,7 @@ export function Wordmark({ image, imageSmall }: { image: string; imageSmall: str
       tween.scrollTrigger?.kill();
       tween.kill();
     };
-  }, []);
+  }, [near]);
 
   return (
     <section aria-label="Chapelhill" className="overflow-hidden pb-16 sm:pb-24">

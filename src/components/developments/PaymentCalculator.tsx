@@ -5,8 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { useId, useMemo, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { PlaceholderTag } from "@/components/site/Placeholder";
-import { developments } from "@/content/developments";
-import { currencies, formatMoney, fxRates, fxUpdatedAt, type Currency } from "@/lib/fx";
+import type { Development } from "@/content/developments";
+import { currencies, formatMoney, type Currency } from "@/lib/fx";
+import type { FxRates } from "@/lib/db/public";
 import { formatNgnShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +23,7 @@ function monthlyRepayment(principal: number, annualRatePct: number, months: numb
 
 const tenureLabel = (m: number) => (m % 12 === 0 ? `${m / 12} ${m === 12 ? "year" : "years"}` : `${m} months`);
 
-export function PaymentCalculator() {
+export function PaymentCalculator({ developments, fx }: { developments: Development[]; fx: FxRates }) {
   const params = useSearchParams();
   const id = useId();
   const initialPrice = Number(params.get("price")) || developments[0].priceFromNgn;
@@ -41,7 +42,7 @@ export function PaymentCalculator() {
     return { deposit, principal, monthly, total, interest: total - price };
   }, [price, depositPct, months, rate]);
 
-  const money = (n: number) => formatMoney(n, currency);
+  const money = (n: number) => formatMoney(n, currency, fx);
 
   return (
     <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
@@ -137,9 +138,9 @@ export function PaymentCalculator() {
 
           {currency !== "NGN" && (
             <p className="text-muted-foreground mt-4 text-xs">
-              Converted at ₦{fxRates[currency].toLocaleString("en-NG")} per {currencies.find((c) => c.code === currency)?.symbol}1, set{" "}
-              {new Date(fxUpdatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}.{" "}
-              <PlaceholderTag label="Rates TBC" />
+              Converted at ₦{fx[currency].toLocaleString("en-NG")} per {currencies.find((c) => c.code === currency)?.symbol}1, set{" "}
+              {new Date(fx.updatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}.{" "}
+              {fx.placeholder && <PlaceholderTag label="Rates TBC" />}
             </p>
           )}
 
