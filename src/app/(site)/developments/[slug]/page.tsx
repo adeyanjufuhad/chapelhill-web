@@ -16,6 +16,7 @@ import { statusLabel } from "@/content/developments";
 import { getDevelopmentBySlug, getDevelopments, getPaymentPlans, getProgress } from "@/lib/db/public";
 import { formatBeds, formatNgnShort } from "@/lib/format";
 import { whatsappLink } from "@/lib/whatsapp";
+import { developmentSchema, jsonLd } from "@/lib/seo";
 
 export async function generateStaticParams() {
   return (await getDevelopments()).map((d) => ({ slug: d.slug }));
@@ -79,6 +80,7 @@ async function DevelopmentDetail({ params }: { params: PageProps<"/developments/
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(developmentSchema(d))} />
       <section data-nav-tone="light" className="bg-cream">
         <div className="container-luxe pt-28 pb-10 sm:pt-36">
           <nav aria-label="Breadcrumb" className="mb-8">

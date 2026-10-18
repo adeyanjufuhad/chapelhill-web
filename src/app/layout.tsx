@@ -31,6 +31,14 @@ export const metadata: Metadata = {
     template: `%s | ${company.shortName}`,
   },
   description: company.description,
+  applicationName: company.shortName,
+  openGraph: {
+    type: "website",
+    locale: "en_NG",
+    siteName: company.name,
+  },
+  twitter: { card: "summary_large_image" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {

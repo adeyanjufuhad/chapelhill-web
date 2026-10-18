@@ -2,6 +2,7 @@ import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { FloatingWhatsApp } from "@/components/site/FloatingWhatsApp";
 import { Footer } from "@/components/site/Footer";
 import { Navbar } from "@/components/site/Navbar";
+import { jsonLd, organizationSchema } from "@/lib/seo";
 
 export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
@@ -12,6 +13,7 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       >
         Skip to content
       </a>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(organizationSchema())} />
       <SmoothScroll />
       <Navbar />
       <main id="main" className="flex-1">
