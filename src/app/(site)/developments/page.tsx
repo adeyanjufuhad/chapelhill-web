@@ -23,7 +23,10 @@ export default async function DevelopmentsPage() {
         crumbs={[{ label: "Developments" }]}
         image={{ src: stock.lagosBridgePylon.src, alt: stock.lagosBridgePylon.alt, position: "50% 35%" }}
       />
-      <section aria-label="All developments" className="container-luxe pt-10 pb-24 sm:pt-16 sm:pb-36">
+      <section aria-labelledby="all-developments" className="container-luxe pt-10 pb-24 sm:pt-16 sm:pb-36">
+        <h2 id="all-developments" className="sr-only">
+          All developments
+        </h2>
         <Suspense fallback={<DevelopmentsGridFallback developments={developments} />}>
           <DevelopmentsExplorer developments={developments} />
         </Suspense>

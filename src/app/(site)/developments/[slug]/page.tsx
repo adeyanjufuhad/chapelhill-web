@@ -48,7 +48,7 @@ export default function DevelopmentPage({ params }: PageProps<"/developments/[sl
 
 function DetailSkeleton() {
   return (
-    <section data-nav-tone="light" className="bg-cream">
+    <section data-nav-tone="light" className="bg-cream min-h-[100svh]">
       <div className="container-luxe animate-pulse pt-36 pb-12">
         <div className="bg-stone h-4 w-40 rounded-full" />
         <div className="bg-stone mt-6 h-20 w-2/3 rounded-2xl" />
