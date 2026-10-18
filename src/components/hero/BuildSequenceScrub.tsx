@@ -251,7 +251,7 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
     <section
       ref={sectionRef}
       aria-label="Chapelhill: from empty plot to finished home"
-      className="theme-forest relative h-svh w-full overflow-hidden"
+      className="theme-oxblood relative h-svh w-full overflow-hidden"
     >
       {/* Frame 1 as a server-rendered priority image: the LCP element. The canvas paints over it. */}
       <div className="absolute inset-0">{poster}</div>
@@ -269,10 +269,10 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         />
       )}
 
-      {/* Readability: dark-green wash from the left, and from the bottom on small screens. */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-forest-deep/90 via-forest-deep/45 to-transparent md:via-forest-deep/35" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-forest-deep/85 to-transparent md:h-1/3" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-forest-deep/50 to-transparent" />
+      {/* Readability: oxblood wash from the left, and from the bottom on small screens. */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-oxblood-deep/90 via-oxblood-deep/45 to-transparent md:via-oxblood-deep/35" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-oxblood-deep/85 to-transparent md:h-1/3" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-oxblood-deep/80 via-oxblood-deep/40 to-transparent md:h-40 md:from-oxblood-deep/40 md:via-transparent" />
 
       <div className="container-luxe relative flex h-full flex-col justify-between pt-28 pb-10 sm:pt-32 sm:pb-14">
         <div ref={captionsRef} className="max-w-md">
@@ -324,7 +324,7 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         <div
           aria-hidden="true"
           className={cn(
-            "bg-forest-deep absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-700",
+            "bg-oxblood-deep absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-700",
             introFading && "opacity-0",
           )}
         >
@@ -337,12 +337,12 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
 
 function ReducedMotionHero({ manifest }: { manifest: BuildManifest }) {
   return (
-    <section aria-label="Chapelhill: from empty plot to finished home" className="theme-forest relative min-h-svh overflow-hidden">
+    <section aria-label="Chapelhill: from empty plot to finished home" className="theme-oxblood relative min-h-svh overflow-hidden">
       {manifest.final && (
         // eslint-disable-next-line @next/next/no-img-element -- static fallback, already optimised WebP
         <img src={manifest.final} alt="" className="absolute inset-0 h-full w-full object-cover" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-r from-forest-deep/90 via-forest-deep/60 to-forest-deep/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-oxblood-deep/90 via-oxblood-deep/60 to-oxblood-deep/20" />
       <StaticHeroContent />
     </section>
   );

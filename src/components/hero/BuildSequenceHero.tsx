@@ -13,7 +13,7 @@ export function BuildSequenceHero() {
 
   if (!manifest) {
     return (
-      <section aria-label="Chapelhill" className="theme-forest relative min-h-svh overflow-hidden">
+      <section aria-label="Chapelhill" className="theme-oxblood relative min-h-svh overflow-hidden">
         <BlueprintDrawing animate className="text-cream absolute top-1/2 right-[-10%] w-[min(110vw,900px)] -translate-y-1/2 opacity-40 md:right-0" />
         <StaticHeroContent />
       </section>

@@ -25,9 +25,9 @@ export default function HeroTestPage() {
           developments and the rest of the home page arrive in Phase 4.
         </p>
       </section>
-      <section className="theme-forest">
+      <section className="theme-ink">
         <div className="container-luxe py-32">
-          <h2 className="text-4xl">Forest section</h2>
+          <h2 className="text-4xl">Ink section</h2>
         </div>
       </section>
     </main>
