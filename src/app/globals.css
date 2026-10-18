@@ -384,3 +384,26 @@ html.js [data-reveal]:not([data-in]) {
     display: block;
   }
 }
+
+/* ScrollZoom (DESIGN.md §7): scroll-driven, no JavaScript. The frame's own
+   pass through the viewport (top enters → bottom leaves) drives the zoom.
+   Frames around it use overflow-clip: overflow-hidden would make the frame
+   the timeline's scroll container and freeze the zoom. */
+@keyframes scroll-zoom {
+  from {
+    transform: translateY(-4%) scale(var(--zoom-from, 1.18));
+  }
+  to {
+    transform: translateY(4%) scale(1);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-zoom {
+      will-change: transform;
+      animation: scroll-zoom linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+}

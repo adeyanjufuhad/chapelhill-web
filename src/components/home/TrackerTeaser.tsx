@@ -88,7 +88,7 @@ export function TrackerTeaser() {
         </Reveal>
 
         <Reveal delay={150} className="relative pb-24 sm:pb-0">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[24px]">
+          <div className="relative aspect-[4/5] overflow-clip rounded-[24px]">
             <ScrollZoom>
               <Image
                 src={stock.siteTeam.src}

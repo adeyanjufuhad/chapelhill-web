@@ -8,7 +8,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Giant CHAPELHILL wordmark filled with photography (background-clip: text).
+ * Giant CHAPELHILL wordmark filled with photography (background-clip: text),
+ * solid oxblood until the photo is attached.
  * The photo drifts slowly behind the letters as the section scrolls past.
  */
 export function Wordmark({ image, imageSmall }: { image: string; imageSmall: string }) {
@@ -39,7 +40,8 @@ export function Wordmark({ image, imageSmall }: { image: string; imageSmall: str
       <p
         ref={ref}
         aria-hidden="true"
-        style={{ "--wm": `url(${image})`, "--wm-sm": `url(${imageSmall})` } as React.CSSProperties}
+        // The photo is attached only near the viewport, so it isn't fetched with the first screen.
+        style={near ? ({ "--wm": `url(${image})`, "--wm-sm": `url(${imageSmall})` } as React.CSSProperties) : undefined}
         className="font-display bg-oxblood bg-[image:var(--wm-sm)] bg-cover bg-clip-text text-center text-[18.5vw] leading-[0.82] font-semibold tracking-[-0.065em] text-transparent select-none md:bg-[image:var(--wm)]"
       >
         Chapelhill

@@ -56,7 +56,7 @@ export default function ServicesPage() {
             >
               <Reveal
                 className={cn(
-                  "relative aspect-[4/3] overflow-hidden rounded-[24px]",
+                  "relative aspect-[4/3] overflow-clip rounded-[24px]",
                   i % 2 === 1 && "lg:order-2",
                 )}
               >

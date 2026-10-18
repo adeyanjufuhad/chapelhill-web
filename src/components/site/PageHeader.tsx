@@ -91,7 +91,7 @@ export function PageHeader({
       </div>
       {image && (
         <div className="px-4 pb-4 sm:px-[4vw] sm:pb-6">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[22px] sm:aspect-[21/9] sm:rounded-[32px]">
+          <div className="relative aspect-[4/3] overflow-clip rounded-[22px] sm:aspect-[21/9] sm:rounded-[32px]">
             <ScrollZoom>
               <Image
                 src={image.src}
