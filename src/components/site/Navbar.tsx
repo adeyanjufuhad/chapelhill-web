@@ -88,7 +88,6 @@ export function Navbar() {
         <StaggeredMenu
           isFixed
           position="right"
-          className="[&_.staggered-menu-header]:z-[60]"
           colors={["#3f1112", "#5c1a1b"]}
           accentColor="#b8893b"
           menuButtonColor={transparent ? "#f8f6f2" : "#1a1a1a"}
