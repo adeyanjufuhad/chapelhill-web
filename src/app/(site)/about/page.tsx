@@ -130,7 +130,7 @@ export default function AboutPage() {
         className="bg-ivory border-border border-y"
       >
         <div className="container-luxe grid items-center gap-14 py-24 sm:py-32 lg:grid-cols-2 lg:gap-24">
-          <Reveal className="relative aspect-[4/5] overflow-hidden rounded-[24px]">
+          <Reveal className="relative aspect-[4/5] overflow-clip rounded-[24px]">
             <ScrollZoom>
               <Image
                 src={stock.livingView.src}
