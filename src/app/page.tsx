@@ -1,69 +1,115 @@
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { company } from "@/content/company";
+import { diasporaFaq } from "@/content/faq";
+import { developments, statusLabel } from "@/content/developments";
 
-export default function Home() {
+// Phase 1 brand preview. Replaced by the real home page in Phase 4.
+
+const swatches = [
+  { name: "Forest", token: "bg-forest", hex: "#2F4A3F", text: "text-cream" },
+  { name: "Forest deep", token: "bg-forest-deep", hex: "#23382F", text: "text-cream" },
+  { name: "Gold", token: "bg-gold", hex: "#B8893B", text: "text-ink" },
+  { name: "Gold ink (text on cream)", token: "bg-gold-ink", hex: "#8A6424", text: "text-cream" },
+  { name: "Gold light (text on forest)", token: "bg-gold-light", hex: "#DBB46B", text: "text-ink" },
+  { name: "Cream", token: "bg-cream", hex: "#F8F6F2", text: "text-ink" },
+  { name: "Stone", token: "bg-stone", hex: "#E7E2D9", text: "text-ink" },
+  { name: "Ink", token: "bg-ink", hex: "#1A1A1A", text: "text-cream" },
+  { name: "Oxblood (logo only)", token: "bg-oxblood", hex: "#5C1A1B", text: "text-cream" },
+];
+
+const formatNgn = (n: number) => `₦${(n / 1_000_000).toLocaleString("en-NG")}M`;
+
+export default function BrandPreview() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main className="flex-1">
+      <section className="theme-forest">
+        <div className="container-luxe py-24 sm:py-32">
+          <p className="eyebrow">Brand preview · Phase 1</p>
+          <div className="rule-gold mt-6" />
+          <h1 className="mt-8 max-w-3xl text-5xl leading-[1.05] sm:text-7xl">
+            A home <span className="accent-italic">worthy of you</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <p className="text-muted-foreground mt-6 max-w-xl text-base leading-relaxed sm:text-lg">{company.intro}</p>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Button size="lg">Explore developments</Button>
+            <Button size="lg" variant="outline" className="border-cream/40 bg-transparent text-cream hover:bg-cream/10">
+              Chat on WhatsApp
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="container-luxe py-20">
+        <p className="eyebrow">Palette</p>
+        <h2 className="mt-4 text-4xl">Colour tokens</h2>
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {swatches.map((s) => (
+            <div key={s.name} className={`${s.token} ${s.text} flex aspect-[4/3] flex-col justify-end rounded-sm border p-4`}>
+              <span className="text-sm font-medium">{s.name}</span>
+              <span className="text-xs opacity-80">{s.hex}</span>
+            </div>
+          ))}
         </div>
-      </main>
-    </div>
+        <div className="mt-12 flex items-center gap-6 rounded-sm border bg-ivory p-6">
+          <Image src="/brand/chapelhill-logo.png" alt="Chapelhill Multicompany International" width={238} height={47} />
+          <p className="text-muted-foreground text-sm">Current logo (238×47 PNG). SVG requested from client.</p>
+        </div>
+      </section>
+
+      <section className="border-y bg-ivory">
+        <div className="container-luxe grid gap-12 py-20 lg:grid-cols-2">
+          <div>
+            <p className="eyebrow">Typography</p>
+            <h2 className="mt-4 text-6xl">Cormorant Garamond</h2>
+            <p className="font-display mt-4 text-3xl italic">Excellence in property development</p>
+            <h3 className="mt-8 text-3xl">Homes built with excellence.</h3>
+          </div>
+          <div className="space-y-4 text-base leading-relaxed">
+            <p className="text-sm font-medium tracking-wide">Inter for body copy</p>
+            <p>{company.mission}</p>
+            <p className="text-muted-foreground">{company.vision}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-luxe py-20">
+        <p className="eyebrow">Developments</p>
+        <h2 className="mt-4 text-4xl">Content check</h2>
+        <ul className="mt-8 divide-y border-y">
+          {developments.map((d) => (
+            <li key={d.slug} className="flex flex-wrap items-baseline justify-between gap-3 py-5">
+              <div>
+                <p className="font-display text-2xl">{d.name}</p>
+                <p className="text-muted-foreground text-sm">
+                  {d.area}, {d.city} · {d.bedrooms.join(", ")} bed
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm">from {formatNgn(d.priceFromNgn)}</span>
+                <Badge variant="secondary">{statusLabel[d.status]}</Badge>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="theme-forest">
+        <div className="container-luxe py-20">
+          <p className="eyebrow">Diaspora FAQ</p>
+          <h2 className="mt-4 text-4xl">Buying from abroad</h2>
+          <Accordion type="single" collapsible className="mt-8 max-w-3xl">
+            {diasporaFaq.map((f) => (
+              <AccordionItem key={f.question} value={f.question}>
+                <AccordionTrigger className="font-display text-xl">{f.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-base leading-relaxed">{f.answer}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+    </main>
   );
 }

@@ -45,3 +45,6 @@ next-env.d.ts
 /assets/video/*.mp4
 /assets/video/*.mov
 /tmp/
+
+# local tooling
+/.claude/
