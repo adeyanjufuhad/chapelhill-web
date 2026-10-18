@@ -1,0 +1,12 @@
+#!/bin/sh
+# Strip AI attribution from commit messages:
+#  - any "Co-authored-by:" trailer that mentions Claude or Anthropic
+#  - "Generated with Claude Code" footers
+msg_file="$1"
+tmp_file="${msg_file}.tmp"
+
+grep -v -i -E '^[[:space:]]*co-authored-by:.*(claude|anthropic)|generated (with|by) \[?claude' "$msg_file" > "$tmp_file" || true
+
+# Drop trailing blank lines left behind by the removed trailers.
+awk 'NF { for (i = 0; i < blank; i++) print ""; blank = 0; print; next } { blank++ }' "$tmp_file" > "$msg_file"
+rm -f "$tmp_file"
