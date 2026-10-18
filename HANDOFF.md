@@ -2,7 +2,7 @@
 
 Paste this file into any AI coding assistant (ChatGPT, Claude, etc.) together with the original project brief to continue the work. Keep it updated at every commit.
 
-_Last updated: 18 October 2026. All phases are on `main`; the remaining work is performance tuning and deployment._
+_Last updated: 18 October 2026. Live on Vercel at https://chapelhill-web.vercel.app; every push to `main` deploys to production._
 
 ## Project
 A premium real-estate site for **Chapelhill Multicompany International Ltd** (Lagos/Abuja property developer), replacing https://chapelhill.com.ng. Public repo: https://github.com/adeyanjufuhad/chapelhill-web. Next.js 16.4 (App Router, **Cache Components on**: read `node_modules/next/dist/docs/` before using Next APIs), TypeScript, Tailwind v4, shadcn/ui (radix-nova), GSAP + ScrollTrigger, Lenis (desktop only), Leaflet, zod, **Neon** (Postgres + Managed Better Auth + Object Storage), Resend. Windows dev machine; Git Bash available.
@@ -32,29 +32,30 @@ Oxblood leads (#5C1A1B), gold accents (#B8893B; AA text tints `gold-ink` / `gold
 - Phase 7: client portal at `/portal` (units with progress timeline and photos, document requests with secure downloads, video inspection booking, password set/reset).
 - `src/proxy.ts` refreshes sessions and redirects `/admin/*` and `/portal/*` to their sign-in pages.
 - Phase 8: metadata, OG image, icons, sitemap, robots, JSON-LD (Organization, Residence/Offer), consented GA4 and Hotjar, and Tawk.to after the first interaction.
-- Motion and performance: a single `RevealObserver` (root layout) flips `data-in` on every `[data-reveal]` / `[data-split]`, so `Reveal` and `SplitHeading` are plain server markup animated by CSS. Below-fold motion mounts near the viewport via `useNear`. Hero frames after the first four stream on the first scroll, touch or key.
+- Motion and performance: a single `RevealObserver` (root layout) flips `data-in` on every `[data-reveal]` / `[data-split]`, so `Reveal` and `SplitHeading` are plain server markup animated by CSS. Below-fold motion mounts near the viewport via `useNear`.
+- Hero: the 400% scroll length is a server-rendered track (`h-[500svh]`) with a sticky section, not a GSAP pin, so the first layout is final. No frames download until the first scroll, touch or key (the poster is frame 1). `ScrollZoom` is a CSS scroll-driven animation (`.scroll-zoom` in globals.css; its frame must use `overflow-clip`, not `overflow-hidden`). Lenis and GSAP for smooth scroll load only on desktop, and Lenis re-measures when the page grows.
+- **Deployment:** Vercel project `chapelhill-web` (Hobby, owner's account), linked to the GitHub repo, functions in **fra1** (`vercel.json`). Production env vars were copied from `.env.local` (empty ones skipped); `NEXT_PUBLIC_SITE_URL` = https://chapelhill-web.vercel.app. Neon Auth trusts https://chapelhill-web.vercel.app.
 
 ## Owner to-do (needs a human)
 1. **Create the first admin:** Neon Console → project chapelhill-web → Auth → Users → add a user, then ⋯ → **Make admin**. Sign in at `/admin/login`.
 2. In Neon Console → Settings → Better Auth: **turn off "Allow sign up"** (clients are created from `/admin/clients`), optionally enable **Magic Link**, and set a **custom email provider** for production (the shared sender is for development).
-3. Add the production domain as a **trusted domain** in Neon Auth.
-4. Add `RESEND_API_KEY`, `RESEND_FROM` (a verified domain sender) and `INQUIRY_NOTIFY_EMAIL` to `.env.local` and to Vercel.
-5. Vercel: import the GitHub repo, add every variable from `.env.local`, set `NEXT_PUBLIC_SITE_URL` to the real domain, and set the function region to **fra1** (next to the database).
+3. Add `RESEND_API_KEY`, `RESEND_FROM` (a verified domain sender) and `INQUIRY_NOTIFY_EMAIL` in Vercel → Settings → Environment Variables (and `.env.local`), then redeploy. Until then enquiries are saved but no email is sent.
+4. Optional features, same place: `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_TAWK_PROPERTY_ID`, `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_HOTJAR_ID`.
+5. **Custom domain** (e.g. chapelhill.com.ng): add it in Vercel → Domains, point DNS at Vercel, then set `NEXT_PUBLIC_SITE_URL` to it and add it as a trusted domain in Neon Auth.
 
-## Lighthouse (mobile, local `next start`, median of 3 runs)
-| Page | Perf | A11y | Best practices | SEO | LCP | CLS |
-|---|---|---|---|---|---|---|
-| `/` | 64 (59–72) | 97 | 100 | 100 | 5.2 s | 0 |
-| `/developments` | 73 | 100 | 100 | 100 | 4.7 s | 0 |
-| `/developments/brains-and-hammers` | 65 (57–81) | 96 | 100 | 100 | 4.7 s | 0 |
-| `/contact` | 84 | 100 | 100 | 100 | 3.4 s | 0 |
+## Performance (PageSpeed Insights, mobile, live site, 18 Oct 2026)
+| Page | Perf | A11y | Best practices | SEO | LCP | TBT | CLS |
+|---|---|---|---|---|---|---|---|
+| `/` | 86 | 97 | 100 | 100 | 3.5 s | 80 ms | 0 |
+| `/developments` | 94 (83 on a cold first hit) | 100 | 100 | 100 | 3.0 s | 10 ms | 0 |
+| `/developments/brains-and-hammers` | 93 | 96 | 100 | 100 | 3.2 s | 40 ms | 0 |
+| `/contact` | 99 | 100 | 100 | 100 | 2.0 s | 50 ms | 0 |
 
-Total Blocking Time varies a lot between runs on the dev machine (150–670 ms), so measure again on the Vercel deployment with PageSpeed Insights before tuning further.
+Local Lighthouse on the Windows dev machine is unreliable: headless Chrome randomly stalls about 1 s before its first frame, and other activity on the machine moves scores by 10+ points. Use PageSpeed Insights on the deployment, or locally add `--chrome-flags="--headless=new --disable-gpu"` and take the median of 5.
 
 ## Next steps
-- **Performance to ≥85 on mobile.** Most of the remaining cost is React hydration (the react-dom chunk takes about 1.4 s of scripting under 4× CPU throttling) and about 1.5 s of style and layout on the home page. Next moves: turn more home sections into server components with CSS-only motion, check whether ScrollTrigger refreshes and pins cause the layout cost, and lazy-load the Leaflet map and its CSS on `/contact` and the detail pages.
-- Home a11y 97: Scroll Reveal words briefly sit at low opacity, which fails contrast while they animate.
-- Deploy on Vercel (owner to-do 5).
+- Home a11y 97 and detail 96: Scroll Reveal words briefly sit at low opacity (contrast while animating); check the detail page's flagged item in PageSpeed.
+- Home is the heaviest page (GSAP for the hero, mobile menu and abroad section). Further gains: load the mobile menu's GSAP on first open, and trim the remaining legacy-JS polyfills (about 14 KB).
 
 ## How to verify
 `npm run dev`, then open `/`, `/developments`, `/admin/login`, `/portal/login`. `npx tsc --noEmit`, `npx eslint src scripts` and `npm run build` must all pass.
