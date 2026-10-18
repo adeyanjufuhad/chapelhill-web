@@ -1,30 +1,49 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { BlueprintDrawing } from "./BlueprintDrawing";
 import { HeroCtas } from "./HeroCtas";
-import { buildStages, frameUrl, heroCopy, type BuildManifest, type FrameSetName } from "./build-manifest";
+import {
+  buildStages,
+  frameUrl,
+  heroCopy,
+  type BuildManifest,
+  type FrameSetName,
+} from "./build-manifest";
 
 gsap.registerPlugin(ScrollTrigger);
 
 type Mode = "frames" | "video" | "static";
 
 const EAGER_FRAMES = 4;
-/** The remaining frames stream in only once the visitor starts interacting (saves mobile data, keeps LCP clean). */
-const START_EVENTS = ["scroll", "wheel", "pointerdown", "keydown", "touchstart"] as const;
+/** Frames stream in only once the visitor starts interacting (saves mobile data, keeps LCP clean). */
+const START_EVENTS = [
+  "scroll",
+  "wheel",
+  "pointerdown",
+  "keydown",
+  "touchstart",
+] as const;
 const IDLE_BATCH = 6;
 const INTRO_MIN_MS = 1400;
 const MAX_DPR = 2;
 /** Share of the pinned scroll spent expanding the window to full-bleed. */
 const EXPAND = 0.16;
-const PIN_LENGTH = "+=400%";
 
 /** Load order after the eager frames: coarse strides first, so a fast scroll still finds nearby frames. */
 function idleOrder(count: number) {
-  const seen = new Set<number>(Array.from({ length: Math.min(EAGER_FRAMES, count) }, (_, i) => i));
+  const seen = new Set<number>(
+    Array.from({ length: Math.min(EAGER_FRAMES, count) }, (_, i) => i),
+  );
   const order: number[] = [];
   for (const stride of [16, 8, 4, 2, 1]) {
     for (let i = 0; i < count; i += stride) {
@@ -40,7 +59,10 @@ function idleOrder(count: number) {
 
 type ClientEnv = { mobile: boolean; reduced: boolean; constrained: boolean };
 
-const queries = { mobile: "(max-width: 767px)", reduced: "(prefers-reduced-motion: reduce)" };
+const queries = {
+  mobile: "(max-width: 767px)",
+  reduced: "(prefers-reduced-motion: reduce)",
+};
 
 function subscribeEnv(onChange: () => void) {
   const lists = Object.values(queries).map((q) => window.matchMedia(q));
@@ -50,16 +72,28 @@ function subscribeEnv(onChange: () => void) {
 
 // Snapshot as a string so useSyncExternalStore compares by value.
 function envSnapshot() {
-  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-  const constrained = Boolean(connection?.saveData) || /(^|-)2g$/.test(connection?.effectiveType ?? "");
-  return [window.matchMedia(queries.mobile).matches, window.matchMedia(queries.reduced).matches, constrained].join(",");
+  const connection = (
+    navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }
+  ).connection;
+  const constrained =
+    Boolean(connection?.saveData) ||
+    /(^|-)2g$/.test(connection?.effectiveType ?? "");
+  return [
+    window.matchMedia(queries.mobile).matches,
+    window.matchMedia(queries.reduced).matches,
+    constrained,
+  ].join(",");
 }
 
 /** Viewport, motion and data-saver preferences; null during server render and hydration. */
 function useClientEnv(): ClientEnv | null {
   const snapshot = useSyncExternalStore(subscribeEnv, envSnapshot, () => null);
   if (snapshot === null) return null;
-  const [mobile, reduced, constrained] = snapshot.split(",").map((v) => v === "true");
+  const [mobile, reduced, constrained] = snapshot
+    .split(",")
+    .map((v) => v === "true");
   return { mobile, reduced, constrained };
 }
 
@@ -72,7 +106,14 @@ const ease = gsap.parseEase("power2.inOut");
 const clamp01 = gsap.utils.clamp(0, 1);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManifest; poster: ReactNode }) {
+export function BuildSequenceScrub({
+  manifest,
+  poster,
+}: {
+  manifest: BuildManifest;
+  poster: ReactNode;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);
@@ -86,6 +127,7 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
   const barRef = useRef<HTMLSpanElement>(null);
   const finaleRef = useRef<HTMLDivElement>(null);
   const captionsRef = useRef<HTMLDivElement>(null);
+  const meterRef = useRef<HTMLDivElement>(null);
 
   const env = useClientEnv();
   const [framesFailed, setFramesFailed] = useState(false);
@@ -94,7 +136,11 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
   const [introFading, setIntroFading] = useState(false);
 
   // Before hydration (env null) render the frames layout, which matches the server HTML.
-  const setName: FrameSetName | null = env ? (env.mobile ? "mobile" : "desktop") : null;
+  const setName: FrameSetName | null = env
+    ? env.mobile
+      ? "mobile"
+      : "desktop"
+    : null;
   const mode: Mode = env?.reduced
     ? "static"
     : manifest.video && (framesFailed || env?.constrained)
@@ -103,11 +149,12 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
 
   useEffect(() => {
     if (!setName || mode === "static") return;
+    const track = trackRef.current;
     const section = sectionRef.current;
     const slot = slotRef.current;
     const windowEl = windowRef.current;
     const canvas = canvasRef.current;
-    if (!section || !slot || !windowEl) return;
+    if (!track || !section || !slot || !windowEl) return;
 
     const { count } = manifest[setName];
     const frames: (HTMLImageElement | undefined)[] = new Array(count);
@@ -190,7 +237,8 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         if (priority) img.fetchPriority = "high";
         img.onload = () => {
           frames[index] = img;
-          if (Math.abs(index - target) <= Math.abs(drawn - target) || drawn < 0) draw();
+          if (Math.abs(index - target) <= Math.abs(drawn - target) || drawn < 0)
+            draw();
           resolve();
         };
         img.onerror = () => {
@@ -218,8 +266,10 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         introRef.current.style.opacity = String(1 - clamp01(e / 0.7));
         introRef.current.style.transform = `translateY(${-48 * e}px)`;
       }
-      if (mistRef.current) mistRef.current.style.opacity = String(1 - clamp01(e / 0.6));
-      if (chromeRef.current) chromeRef.current.style.opacity = String(clamp01((e - 0.6) / 0.4));
+      if (mistRef.current)
+        mistRef.current.style.opacity = String(1 - clamp01(e / 0.6));
+      if (chromeRef.current)
+        chromeRef.current.style.opacity = String(clamp01((e - 0.6) / 0.4));
       section!.dataset.navTone = e > 0.85 ? "dark" : "light";
 
       // 2. Frame scrub across the rest of the pin.
@@ -230,12 +280,16 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         if (video?.duration && !rafHandle) {
           rafHandle = requestAnimationFrame(() => {
             rafHandle = 0;
-            video.currentTime = Math.min(video.duration - 0.05, fp * video.duration);
+            video.currentTime = Math.min(
+              video.duration - 0.05,
+              fp * video.duration,
+            );
           });
         }
       }
 
-      if (counterRef.current) counterRef.current.textContent = String(Math.round(fp * 100));
+      if (counterRef.current)
+        counterRef.current.textContent = String(Math.round(fp * 100));
       if (barRef.current) barRef.current.style.transform = `scaleX(${fp})`;
 
       const next = buildStages.findIndex((s) => fp >= s.from && fp < s.to);
@@ -248,37 +302,52 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         finaleRef.current.style.transform = `translateY(${(1 - f) * 24}px)`;
         finaleRef.current.style.pointerEvents = f > 0.5 ? "auto" : "none";
       }
-      if (captionsRef.current) captionsRef.current.style.opacity = String(1 - f);
+      if (captionsRef.current)
+        captionsRef.current.style.opacity = String(1 - f);
+      // The counter makes way for the finale CTAs (they share the bottom edge on phones).
+      if (meterRef.current) meterRef.current.style.opacity = String(1 - f);
     }
 
     resize();
     window.addEventListener("resize", resize);
 
     if (mode === "frames") {
-      const eager = Array.from({ length: Math.min(EAGER_FRAMES, count) }, (_, i) => load(i, i === 0));
-      Promise.all(eager).then(() => {
+      // The poster already shows frame 1, so nothing is fetched until the
+      // visitor scrolls, touches or presses a key (keeps LCP and data clean).
+      finishIntro();
+      const start = () => {
+        START_EVENTS.forEach((e) => window.removeEventListener(e, start));
         if (cancelled) return;
-        if (failures >= 3 && manifest.video) {
-          setFramesFailed(true);
-          return;
-        }
-        finishIntro();
-        const queue = idleOrder(count);
-        const pump = () => {
-          if (cancelled || queue.length === 0) return;
-          Promise.all(queue.splice(0, IDLE_BATCH).map((i) => load(i))).then(() => {
-            idleHandle = idle(pump);
-          });
-        };
-        const start = () => {
-          START_EVENTS.forEach((e) => window.removeEventListener(e, start));
-          if (!cancelled) idleHandle = idle(pump);
-        };
-        // Already scrolled (e.g. a refresh mid-page): start now.
-        if (window.scrollY > 0) start();
-        else START_EVENTS.forEach((e) => window.addEventListener(e, start, { passive: true, once: true }));
-        removeStartListeners = () => START_EVENTS.forEach((e) => window.removeEventListener(e, start));
-      });
+        const eager = Array.from(
+          { length: Math.min(EAGER_FRAMES, count) },
+          (_, i) => load(i, i === 0),
+        );
+        Promise.all(eager).then(() => {
+          if (cancelled) return;
+          if (failures >= 3 && manifest.video) {
+            setFramesFailed(true);
+            return;
+          }
+          const queue = idleOrder(count);
+          const pump = () => {
+            if (cancelled || queue.length === 0) return;
+            Promise.all(queue.splice(0, IDLE_BATCH).map((i) => load(i))).then(
+              () => {
+                idleHandle = idle(pump);
+              },
+            );
+          };
+          idleHandle = idle(pump);
+        });
+      };
+      // Already scrolled (e.g. a refresh mid-page): start now.
+      if (window.scrollY > 0) start();
+      else
+        START_EVENTS.forEach((e) =>
+          window.addEventListener(e, start, { passive: true, once: true }),
+        );
+      removeStartListeners = () =>
+        START_EVENTS.forEach((e) => window.removeEventListener(e, start));
     } else {
       finishIntro();
     }
@@ -289,14 +358,12 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
       ease: "none",
       onUpdate: () => update(state.progress),
       scrollTrigger: {
-        trigger: section,
+        // The track's height is the scroll length; the section sticks inside it.
+        trigger: track,
         start: "top top",
-        end: PIN_LENGTH,
-        pin: true,
+        end: "bottom bottom",
         scrub: true,
-        anticipatePin: 1,
         invalidateOnRefresh: true,
-        // Pins further down the page must measure after this 400% spacer exists.
         refreshPriority: 1,
         onRefresh: () => {
           measure();
@@ -307,7 +374,8 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
     update(0);
     // Re-measure once after load (fonts, images) instead of forcing layout during hydration.
     const refreshAfterLoad = () => ScrollTrigger.refresh();
-    if (document.readyState === "complete") requestAnimationFrame(refreshAfterLoad);
+    if (document.readyState === "complete")
+      requestAnimationFrame(refreshAfterLoad);
     else window.addEventListener("load", refreshAfterLoad, { once: true });
 
     return () => {
@@ -328,121 +396,166 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
       <StaticBuildHero>
         {manifest.final && (
           // eslint-disable-next-line @next/next/no-img-element -- static fallback, already optimised WebP
-          <img src={manifest.final} alt="The finished Chapelhill duplex at dusk" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={manifest.final}
+            alt="The finished Chapelhill duplex at dusk"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         )}
       </StaticBuildHero>
     );
   }
 
+  // A tall track with a sticky section, rendered on the server: the 400%
+  // scroll length is in the first layout, so nothing below jumps when the
+  // scrub starts and below-the-fold images stay out of lazy-load range.
   return (
-    <section
-      ref={sectionRef}
-      data-nav-tone="light"
-      aria-label="Chapelhill: from empty plot to finished home"
-      className="bg-cream relative flex h-svh w-full flex-col overflow-hidden"
-    >
-      {/* Opening state: headline on cream, above the window slot. */}
-      <div ref={introRef} className="relative z-0">
-        <HeroIntro />
-      </div>
-      <div ref={slotRef} aria-hidden="true" className="mx-4 mb-4 flex-1 rounded-[22px] sm:mx-[4vw] sm:mb-[4vh] sm:rounded-[32px]" />
-
-      {/* The window: full-section layer, clipped to the slot and opened on scroll. */}
-      <div
-        ref={windowRef}
-        className="theme-oxblood absolute inset-0 z-10 overflow-hidden"
-        style={{ clipPath: "inset(45% 4vw 4vh 4vw round 32px)" }}
+    <div ref={trackRef} className="relative h-[500svh]">
+      <section
+        ref={sectionRef}
+        data-nav-tone="light"
+        aria-label="Chapelhill: from empty plot to finished home"
+        className="bg-cream sticky top-0 flex h-svh w-full flex-col overflow-hidden"
       >
-        <div ref={zoomRef} className="absolute inset-0 origin-[50%_60%] will-change-transform">
-          {/* Frame 1 as a server-rendered priority image: the LCP element. The canvas paints over it. */}
-          <div className="absolute inset-0">{poster}</div>
-          {mode === "frames" ? (
-            <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />
-          ) : (
-            <video
-              ref={videoRef}
-              src={manifest.video ?? undefined}
-              muted
-              playsInline
-              preload="auto"
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          )}
+        {/* Opening state: headline on cream, above the window slot. */}
+        <div ref={introRef} className="relative z-0">
+          <HeroIntro />
         </div>
+        <div
+          ref={slotRef}
+          aria-hidden="true"
+          className="mx-4 mb-4 flex-1 rounded-[22px] sm:mx-[4vw] sm:mb-[4vh] sm:rounded-[32px]"
+        />
 
-        {/* Soft white mist across the top of the window that parts as it opens. */}
-        <div ref={mistRef} aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div className="absolute top-[28%] left-[-15%] h-[30%] w-[70%] bg-[radial-gradient(closest-side,rgb(255_255_255/0.4),transparent)]" />
-          <div className="absolute top-[26%] right-[-18%] h-[28%] w-[65%] bg-[radial-gradient(closest-side,rgb(255_255_255/0.32),transparent)]" />
-        </div>
+        {/* The window: full-section layer, clipped to the slot and opened on scroll. */}
+        <div
+          ref={windowRef}
+          className="theme-oxblood absolute inset-0 z-10 overflow-hidden"
+          style={{ clipPath: "inset(45% 4vw 4vh 4vw round 32px)" }}
+        >
+          <div
+            ref={zoomRef}
+            className="absolute inset-0 origin-[50%_60%] will-change-transform"
+          >
+            {/* Frame 1 as a server-rendered priority image: the LCP element. The canvas paints over it. */}
+            <div className="absolute inset-0">{poster}</div>
+            {mode === "frames" ? (
+              <canvas
+                ref={canvasRef}
+                className="absolute inset-0 h-full w-full"
+                aria-hidden="true"
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                src={manifest.video ?? undefined}
+                muted
+                playsInline
+                preload="auto"
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )}
+          </div>
 
-        {/* Readability washes, captions and counter appear once the window is open. */}
-        <div ref={chromeRef} className="absolute inset-0 opacity-0">
-          <div className="from-oxblood-deep/80 via-oxblood-deep/25 pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t to-transparent" />
-          <div className="from-ink/45 pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b to-transparent" />
+          {/* Soft white mist across the top of the window that parts as it opens. */}
+          <div
+            ref={mistRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+          >
+            <div className="absolute top-[28%] left-[-15%] h-[30%] w-[70%] bg-[radial-gradient(closest-side,rgb(255_255_255/0.4),transparent)]" />
+            <div className="absolute top-[26%] right-[-18%] h-[28%] w-[65%] bg-[radial-gradient(closest-side,rgb(255_255_255/0.32),transparent)]" />
+          </div>
 
-          <div className="container-luxe relative flex h-full flex-col justify-end pt-28 pb-8 sm:pb-12">
-            <div className="flex items-end justify-between gap-6">
-              <div ref={captionsRef} className="relative h-36 min-w-0 flex-1 sm:h-44" aria-live="polite">
-                {buildStages.map((s, i) => (
-                  <div
-                    key={s.label}
-                    aria-hidden={i !== stage}
-                    className={cn(
-                      "absolute inset-x-0 bottom-0 transition-[opacity,transform] duration-700 ease-[var(--ease-luxe)]",
-                      i === stage ? "translate-y-0 opacity-100" : i < stage ? "-translate-y-3 opacity-0" : "translate-y-3 opacity-0",
-                    )}
-                  >
-                    <p className="text-gold-light text-xs tracking-[0.2em] tabular-nums">
-                      {String(i + 1).padStart(2, "0")} / {String(buildStages.length).padStart(2, "0")}
-                    </p>
-                    <p className="font-display mt-2 text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] font-medium tracking-[-0.04em]">
-                      {s.label}
-                    </p>
-                    <p className="text-muted-foreground mt-3 text-sm sm:text-base">{s.detail}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="w-24 shrink-0 text-right sm:w-56">
-                <p className="font-display text-[clamp(2.25rem,5vw,4.5rem)] leading-none font-medium tracking-[-0.04em] tabular-nums">
-                  <span ref={counterRef}>0</span>
-                  <span className="text-gold-light text-[0.5em] align-top">%</span>
-                </p>
-                <p className="text-muted-foreground mt-1 text-xs tracking-[0.18em] uppercase">complete</p>
-                <span className="bg-cream/20 mt-3 hidden h-px w-full overflow-hidden sm:block">
-                  <span ref={barRef} className="bg-gold block h-full w-full origin-left scale-x-0" />
-                </span>
+          {/* Readability washes, captions and counter appear once the window is open. */}
+          <div ref={chromeRef} className="absolute inset-0 opacity-0">
+            <div className="from-oxblood-deep/80 via-oxblood-deep/25 pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t to-transparent" />
+            <div className="from-ink/45 pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b to-transparent" />
+
+            <div className="container-luxe relative flex h-full flex-col justify-end pt-28 pb-8 sm:pb-12">
+              <div className="flex items-end justify-between gap-6">
+                <div
+                  ref={captionsRef}
+                  className="relative h-36 min-w-0 flex-1 sm:h-44"
+                  aria-live="polite"
+                >
+                  {buildStages.map((s, i) => (
+                    <div
+                      key={s.label}
+                      aria-hidden={i !== stage}
+                      className={cn(
+                        "absolute inset-x-0 bottom-0 transition-[opacity,transform] duration-700 ease-[var(--ease-luxe)]",
+                        i === stage
+                          ? "translate-y-0 opacity-100"
+                          : i < stage
+                            ? "-translate-y-3 opacity-0"
+                            : "translate-y-3 opacity-0",
+                      )}
+                    >
+                      <p className="text-gold-light text-xs tracking-[0.2em] tabular-nums">
+                        {String(i + 1).padStart(2, "0")} /{" "}
+                        {String(buildStages.length).padStart(2, "0")}
+                      </p>
+                      <p className="font-display mt-2 text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] font-medium tracking-[-0.04em]">
+                        {s.label}
+                      </p>
+                      <p className="text-muted-foreground mt-3 text-sm sm:text-base">
+                        {s.detail}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <div ref={meterRef} className="w-24 shrink-0 text-right sm:w-56">
+                  <p className="font-display text-[clamp(2.25rem,5vw,4.5rem)] leading-none font-medium tracking-[-0.04em] tabular-nums">
+                    <span ref={counterRef}>0</span>
+                    <span className="text-gold-light text-[0.5em] align-top">
+                      %
+                    </span>
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-xs tracking-[0.18em] uppercase">
+                    complete
+                  </p>
+                  <span className="bg-cream/20 mt-3 hidden h-px w-full overflow-hidden sm:block">
+                    <span
+                      ref={barRef}
+                      className="bg-gold block h-full w-full origin-left scale-x-0"
+                    />
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Finale over the finished home. */}
-        <div
-          ref={finaleRef}
-          className="container-luxe pointer-events-none absolute inset-x-0 bottom-0 pb-10 opacity-0 sm:pb-16"
-        >
-          <p className="eyebrow">Welcome home</p>
-          <h2 className="mt-4 max-w-4xl text-[clamp(2.6rem,7vw,6.5rem)] leading-[0.98] tracking-[-0.045em]">
-            Your home, finished. <span className="accent-italic block">{heroCopy.headlineAccent}</span>
-          </h2>
-          <HeroCtas className="mt-8" />
-        </div>
-
-        {introVisible && (
+          {/* Finale over the finished home. */}
           <div
-            aria-hidden="true"
-            className={cn(
-              "bg-oxblood-deep absolute inset-0 z-10 flex items-center justify-center pt-[38vh] transition-opacity duration-700 sm:pt-[30vh]",
-              introFading && "opacity-0",
-            )}
+            ref={finaleRef}
+            className="container-luxe pointer-events-none absolute inset-x-0 bottom-0 pb-10 opacity-0 sm:pb-16"
           >
-            <BlueprintDrawing className="text-cream w-[min(70vw,520px)]" />
+            <p className="eyebrow">Welcome home</p>
+            <h2 className="mt-4 max-w-4xl text-[clamp(2.6rem,7vw,6.5rem)] leading-[0.98] tracking-[-0.045em]">
+              Your home, finished.{" "}
+              <span className="accent-italic block">
+                {heroCopy.headlineAccent}
+              </span>
+            </h2>
+            <HeroCtas className="mt-8" />
           </div>
-        )}
-      </div>
-    </section>
+
+          {introVisible && (
+            <div
+              aria-hidden="true"
+              className={cn(
+                "bg-oxblood-deep absolute inset-0 z-10 flex items-center justify-center pt-[38vh] transition-opacity duration-700 sm:pt-[30vh]",
+                introFading && "opacity-0",
+              )}
+            >
+              <BlueprintDrawing className="text-cream w-[min(70vw,520px)]" />
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -454,12 +567,14 @@ function HeroIntro() {
         <div>
           <p className="eyebrow">{heroCopy.eyebrow}</p>
           <h1 className="mt-4 text-[clamp(2.6rem,7.6vw,7.25rem)] leading-[0.95] tracking-[-0.05em]">
-            Homes built with <span className="accent-italic text-oxblood">excellence.</span>
+            Homes built with{" "}
+            <span className="accent-italic text-oxblood">excellence.</span>
           </h1>
         </div>
         <div className="hidden pb-2 sm:block">
           <p className="text-muted-foreground max-w-sm text-base leading-relaxed">
-            Property development, construction and care in Lagos and Abuja, for families at home and buyers abroad.
+            Property development, construction and care in Lagos and Abuja, for
+            families at home and buyers abroad.
           </p>
           <HeroCtas tone="light" className="mt-6" />
         </div>
@@ -475,12 +590,19 @@ function HeroIntro() {
 /** Reduced motion and no-manifest fallback: same layout, no pin, window already framed. */
 export function StaticBuildHero({ children }: { children?: ReactNode }) {
   return (
-    <section data-nav-tone="light" aria-label="Chapelhill" className="bg-cream relative flex min-h-svh flex-col">
+    <section
+      data-nav-tone="light"
+      aria-label="Chapelhill"
+      className="bg-cream relative flex min-h-svh flex-col"
+    >
       <HeroIntro />
       <div className="theme-oxblood relative mx-4 mb-4 min-h-[48svh] flex-1 overflow-hidden rounded-[22px] sm:mx-[4vw] sm:mb-[4vh] sm:rounded-[32px]">
         {children ?? (
           <div className="flex h-full items-center justify-center p-10">
-            <BlueprintDrawing animate className="text-cream w-[min(80vw,620px)]" />
+            <BlueprintDrawing
+              animate
+              className="text-cream w-[min(80vw,620px)]"
+            />
           </div>
         )}
         <div className="from-oxblood-deep/85 absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t to-transparent" />
@@ -488,7 +610,12 @@ export function StaticBuildHero({ children }: { children?: ReactNode }) {
           <ol className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-sm">
             {buildStages.map((s, i) => (
               <li key={s.label} className="flex items-center gap-3">
-                {i > 0 && <span aria-hidden="true" className="bg-gold inline-block h-px w-4" />}
+                {i > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="bg-gold inline-block h-px w-4"
+                  />
+                )}
                 {s.label}
               </li>
             ))}
