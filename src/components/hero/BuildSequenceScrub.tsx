@@ -121,6 +121,9 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
     let lastProgress = 0;
     // Window start insets (px), measured from the layout slot.
     let inset = { top: 0, right: 0, bottom: 0, left: 0, radius: 28 };
+    // How far the window's centre sits below the section's centre, so the
+    // opening crop shows the middle of the frame rather than its lower half.
+    let centreOffset = 0;
 
     const measure = () => {
       const s = section.getBoundingClientRect();
@@ -132,6 +135,7 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         left: r.left - s.left,
         radius: parseFloat(getComputedStyle(slot).borderTopLeftRadius) || 28,
       };
+      centreOffset = r.top + r.height / 2 - (s.top + s.height / 2);
     };
 
     const nearestLoaded = (index: number) => {
@@ -204,7 +208,9 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
       const b = lerp(inset.bottom, 0, e);
       const l = lerp(inset.left, 0, e);
       windowEl!.style.clipPath = `inset(${t}px ${r}px ${b}px ${l}px round ${lerp(inset.radius, 0, e)}px)`;
-      if (zoomRef.current) zoomRef.current.style.transform = `scale(${lerp(1.16, 1, e)})`;
+      if (zoomRef.current) {
+        zoomRef.current.style.transform = `translateY(${centreOffset * (1 - e)}px) scale(${lerp(1.08, 1, e)})`;
+      }
       if (introRef.current) {
         introRef.current.style.opacity = String(1 - clamp01(e / 0.7));
         introRef.current.style.transform = `translateY(${-48 * e}px)`;
@@ -280,6 +286,8 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
         scrub: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
+        // Pins further down the page must measure after this 400% spacer exists.
+        refreshPriority: 1,
         onRefresh: () => {
           measure();
           update(state.progress);
@@ -287,6 +295,8 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
       },
     });
     update(0);
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
 
     return () => {
       cancelled = true;
@@ -349,8 +359,8 @@ export function BuildSequenceScrub({ manifest, poster }: { manifest: BuildManife
 
         {/* Soft white mist across the top of the window that parts as it opens. */}
         <div ref={mistRef} aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div className="absolute top-[38%] left-[-10%] h-[32%] w-[70%] rounded-full bg-white/70 blur-3xl" />
-          <div className="absolute top-[36%] right-[-12%] h-[30%] w-[65%] rounded-full bg-white/60 blur-3xl" />
+          <div className="absolute top-[34%] left-[-12%] h-[18%] w-[60%] rounded-full bg-white/35 blur-3xl" />
+          <div className="absolute top-[32%] right-[-14%] h-[16%] w-[55%] rounded-full bg-white/30 blur-3xl" />
         </div>
 
         {/* Readability washes, captions and counter appear once the window is open. */}

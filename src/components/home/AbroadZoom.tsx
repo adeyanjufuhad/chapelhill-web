@@ -38,7 +38,16 @@ export function AbroadZoom() {
 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
     const tl = gsap.timeline({
-      scrollTrigger: { trigger: section, start: "top top", end: "+=140%", pin: true, scrub: true, anticipatePin: 1 },
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: "+=140%",
+        pin: true,
+        scrub: true,
+        anticipatePin: 1,
+        // The navbar goes transparent once the photo fills the screen.
+        onUpdate: (self) => (section.dataset.navTone = self.progress > 0.55 ? "dark" : "light"),
+      },
     });
     tl.fromTo(
       frame,
@@ -56,7 +65,7 @@ export function AbroadZoom() {
 
   return (
     <section aria-labelledby="abroad-heading">
-      <div ref={sectionRef} data-nav-tone="dark" className="bg-cream relative h-svh overflow-hidden">
+      <div ref={sectionRef} data-nav-tone="light" className="bg-cream relative h-svh overflow-hidden">
         <div ref={frameRef} className="theme-oxblood absolute inset-0 overflow-hidden">
           <div ref={imageRef} className="absolute inset-0">
             <Image src={stock.lagosLagoonAerial.src} alt={stock.lagosLagoonAerial.alt} fill sizes="100vw" className="object-cover" />

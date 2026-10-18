@@ -23,7 +23,7 @@ export function Statement() {
         <dl className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
           {trustStats.map((s) => (
             <div key={s.label} className="border-ink/15 border-t pt-5">
-              <dd className="font-display text-oxblood text-[clamp(2.6rem,5vw,4rem)] leading-none font-medium tracking-[-0.04em]">
+              <dd className="font-display text-oxblood text-[clamp(2.2rem,3.6vw,3.4rem)] leading-none font-medium tracking-[-0.04em]">
                 <Counter value={s.value} locale="en-GB" suffix={s.suffix || undefined} fontSize="1em" motionBlur={false} duration={1.1} />
               </dd>
               <dt className="text-muted-foreground mt-3 text-sm">

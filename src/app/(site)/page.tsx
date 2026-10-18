@@ -15,7 +15,7 @@ export default function HomePage() {
     <>
       <BuildSequenceHero />
       <Statement />
-      <Wordmark image={stock.lagosBridgeSky.src} imageSmall={stock.lagosBridgeSky.src.replace("/stock/", "/stock/sm/")} />
+      <Wordmark image={stock.lagosLagoonAerial.src} imageSmall={stock.lagosLagoonAerial.src.replace("/stock/", "/stock/sm/")} />
       <FeaturedDevelopments />
       <AbroadZoom />
       <ServicesFlow />
