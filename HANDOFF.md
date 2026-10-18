@@ -2,40 +2,46 @@
 
 Paste this file into any AI coding assistant (ChatGPT, Claude, etc.) together with the original project brief to continue the work. Keep it updated at every commit.
 
-_Last updated: 18 October 2026, on branch `redesign` (pushed; not yet merged to main)._
+_Last updated: 18 October 2026, on branch `phase-6` (Phases 6 and 7 done; Phase 8 in progress). `main` has everything up to Phase 5._
 
 ## Project
-A premium real-estate site for **Chapelhill Multicompany International Ltd** (Lagos/Abuja property developer), replacing https://chapelhill.com.ng. Public repo: https://github.com/adeyanjufuhad/chapelhill-web. Next.js 16.4 (App Router, **Cache Components on**: read `node_modules/next/dist/docs/` before using Next APIs), TypeScript, Tailwind v4, shadcn/ui (radix-nova), GSAP + ScrollTrigger, Lenis (desktop only), Leaflet, zod. Windows dev machine; Git Bash available.
+A premium real-estate site for **Chapelhill Multicompany International Ltd** (Lagos/Abuja property developer), replacing https://chapelhill.com.ng. Public repo: https://github.com/adeyanjufuhad/chapelhill-web. Next.js 16.4 (App Router, **Cache Components on**: read `node_modules/next/dist/docs/` before using Next APIs), TypeScript, Tailwind v4, shadcn/ui (radix-nova), GSAP + ScrollTrigger, Lenis (desktop only), Leaflet, zod, **Neon** (Postgres + Managed Better Auth + Object Storage), Resend. Windows dev machine; Git Bash available.
 
 ## Ground rules (from the owner)
 - Conventional commits, committed and pushed often. **No AI attribution** in commits or PRs. The `.githooks/commit-msg` hook strips it (`git config core.hooksPath .githooks`).
 - Never generate images or video with AI APIs. Construction visuals come from the owner (Google Flow).
-- Secrets only in `.env.local` (gitignored). Keys are listed in `.env.example`. `API_KEY_21ST` is for installing 21st.dev components.
-- Ask before any database step whether to use the Supabase MCP.
-- Real client content lives in `src/content/*`. Missing content uses clearly marked placeholders (`<PlaceholderTag />`) and is listed in `CONTENT-NEEDED.md`.
-- Every imported component and stock photo goes in `CREDITS.md`.
-- Stock photos are Unsplash License only, used for mood. Never present them as Chapelhill developments. Pinterest is for inspiration only (copyright).
+- Secrets only in `.env.local` (gitignored). Keys are listed in `.env.example`.
+- **Backend is Neon, not Supabase** (owner's decision).
+- Real client content lives in `src/content/*`. Missing content uses clearly marked placeholders (`<PlaceholderTag />`, hide all with `NEXT_PUBLIC_SHOW_PLACEHOLDERS=false`) and is listed in `CONTENT-NEEDED.md`.
+- Every imported component and stock photo goes in `CREDITS.md`. Stock photos: Unsplash License only, for mood, never presented as Chapelhill developments.
 
-## Brand (as changed by the owner)
-- **Oxblood leads** (#5C1A1B, from the logo), with gold accents (#B8893B; AA-safe text tints `gold-ink` #8A6424 on light and `gold-light` #DBB46B on dark), cream/ivory backgrounds and ink text. **Green is a minor accent only.** Tokens are in `src/app/globals.css`, with theme classes `.theme-oxblood` / `.theme-ink` / `.theme-forest`.
-- **Direction change (current work):** a full redesign towards the reference video (the "FIND Real Estate" site by @wearebrand.io): bright and airy, mostly white/cream, huge type, lots of space, scroll-driven zooms, a giant image-filled wordmark, oversized service rows with image reveals on hover (React Bits **Flowing Menu**), and clean image cards. The hero is also redesigned: an airy cream start, with the build video in an inset window that expands to full-bleed on scroll, then the frame scrub.
+## Brand
+Oxblood leads (#5C1A1B), gold accents (#B8893B; AA text tints `gold-ink` / `gold-light`), cream/ivory backgrounds, ink text; green is a minor accent. Inter Tight display + Inter body + Cormorant italic accents. Airy "FIND"-style layout (big type, rounded image windows, scroll zooms). Tokens in `src/app/globals.css`.
+
+## Neon setup (live)
+- Project **chapelhill-web** (`withered-cherry-56803155`), region **aws-eu-central-1 (Frankfurt)** (object storage is not available in London), Postgres 18, branch `main` (`br-raspy-lab-b9w8cxle`).
+- Schema: `db/migrations/0001_init.sql` (developments, images, unit types, payment plans, progress updates/media, client profiles/units, document and inspection requests, inquiries, newsletter, FX rates, testimonials, site stats). RLS is enabled on every table with no policies (no Data API access); the Next.js server connects as the owner and enforces access in `src/lib/db/*`.
+- `npm run db:migrate` (tracked in `_migrations`) and `npm run db:seed` (idempotent, from `src/content`). Both have been run.
+- **Auth:** Managed Better Auth, email + password. Users are in `neon_auth."user"` (`role` = `admin` or `user`). Admin = `role 'admin'`.
+- **Storage:** buckets `media` (public-read: development and progress photos, referenced as `media:<key>`) and `client-documents` (private, keys under `<user_id>/`, 5-minute signed URLs after an ownership check).
+- Test rows: one enquiry, one inspection request and one newsletter row from `automated-test@example.com` (enquiries marked closed). Safe to delete.
 
 ## Done
-- Phase 0 plan, Phase 1 scaffold (tokens, fonts, hook, env example, content docs).
-- Phase 2/3 frame pipeline: `npm run frames:video` (ffmpeg via `ffmpeg-static` fallback; `scripts/build-frames/*`) and `npm run frames:check`. Output goes to `public/build/` plus `manifest.json` (desktop 150 frames at 1280×720, mobile 90 at 960×540, mobile MP4 1.8 MB). Source video is in `assets/video/build-source.mp4` (gitignored).
-- `<BuildSequenceHero />` (`src/components/hero/`): manifest-driven canvas scrub, blueprint SVG intro, captions with timings in `build-manifest.ts`, % counter, reduced-motion and MP4 fallbacks. Test page: `/dev/hero`.
-- Phase 4 home page (`src/app/(site)/page.tsx`) and site chrome: Navbar (transparent over `[data-hero]`), restyled React Bits StaggeredMenu for mobile, Footer, floating WhatsApp, newsletter form (server action, **not persisted yet**).
-- Phase 5 shared parts: `PageHeader`, `InquiryForm` plus `submitInquiry` action (inspection mode, **not persisted yet**), `Lightbox`, lazy `DevelopmentsMap` (Leaflet + CARTO tiles), React Bits ScrollStack and Masonry installed.
-- 17 Unsplash photos in `public/images/stock/` (960px variants in `stock/sm/`) with metadata in `src/content/stock.ts`.
-- **Home redesign done** (branch `redesign`). Type is Inter Tight display + Cormorant italic accents (`.accent-italic` uses `--accent-ink`: oxblood on light, gold-light on dark). `.container-luxe` aligns to 4vw edges. Hero (`BuildSequenceScrub`): cream headline, then an inset window (clip-path measured from a layout slot) expands to full-bleed over the first 16% of a 400% pin, then the frame scrub, then a "Your home, finished" finale. Sections: `Statement` (React Bits ScrollReveal + counters), `Wordmark` (image-filled text), `FeaturedDevelopments` (clean rounded cards), `AbroadZoom` (pinned clip-path zoom + 4 steps), `ServicesFlow` (React Bits FlowingMenu), `TrackerTeaser`, `Testimonials`, `FaqSection`, `ClosingCta` (Lekki bridge sky), oxblood `Footer` with giant wordmark.
-- Navbar tone: sections set `data-nav-tone="light" | "dark"` (pinned sections update it on scroll); elsewhere the bar is solid cream.
-- The React Compiler lint rules are relaxed for `src/components/reactbits/**` only (vendored code; see `eslint.config.mjs`).
+- Phases 0–5: scaffold, frame pipeline (`npm run frames:video`, `frames:check`), `<BuildSequenceHero />`, redesigned home, all public pages (About, Services, Developments with filters and map, detail pages, Compare, Calculator, Gallery, Contact).
+- Phase 6: cached data layer `src/lib/db/public.ts` (`"use cache"` + `cacheTag`, falls back to `src/content` if the DB is unreachable); forms persist to Neon and email the sales inbox via Resend (`src/lib/email.ts`); admin dashboard at `/admin` (developments + photos + payment plans, construction progress with photos, enquiries, document and inspection requests, clients with invite emails, FX rates and stats, subscriber CSV export). Every admin action calls `requireAdmin()`.
+- Phase 7: client portal at `/portal` (units with progress timeline and photos, document requests with secure downloads, video inspection booking, password set/reset).
+- `src/proxy.ts` refreshes sessions and redirects `/admin/*` and `/portal/*` to their sign-in pages.
+
+## Owner to-do (needs a human)
+1. **Create the first admin:** Neon Console → project chapelhill-web → Auth → Users → add a user, then ⋯ → **Make admin**. Sign in at `/admin/login`.
+2. In Neon Console → Settings → Better Auth: **turn off "Allow sign up"** (clients are created from `/admin/clients`), optionally enable **Magic Link**, and set a **custom email provider** for production (the shared sender is for development).
+3. Add the production domain as a **trusted domain** in Neon Auth.
+4. Add `RESEND_API_KEY`, `RESEND_FROM` (a verified domain sender) and `INQUIRY_NOTIFY_EMAIL` to `.env.local` and to Vercel.
+5. Vercel: import the GitHub repo, add every variable from `.env.local`, set `NEXT_PUBLIC_SITE_URL` to the real domain, and set the function region to **fra1** (next to the database).
 
 ## Next steps
-1. Owner review of the redesign, then merge `redesign` into main. When `API_KEY_21ST` is in `.env.local`, use 21st.dev components where they beat the current ones.
-2. Phase 5 pages in the new style (restyle `PageHeader` to the light airy look first): About, Services (ScrollStack process + per-service enquiry), Developments (filters: location/type/status/price, list/map toggle, `useSearchParams` inside `<Suspense>`), Development detail (`generateStaticParams` for the 3 slugs; gallery + lightbox, specs "On request" when null, placeholder payment plans, map, placeholder progress timeline, enquiry, WhatsApp prefilled, virtual inspection form), Compare (2–3 side by side), Calculator (price, deposit %, tenure, rate; ₦/$/£ with placeholder FX; disclaimer), Gallery (Masonry + lightbox), Contact (map, phones, email, form).
-3. Phase 6: ask about the Supabase MCP, then schema + RLS (see the plan in the Phase 0 notes), admin dashboard, persist inquiries and newsletter, Resend notifications, FX rates in the admin.
-4. Phase 7: diaspora portal (magic link). Phase 8: SEO/JSON-LD/sitemap, GA4/Hotjar/Tawk, Lighthouse ≥85 on mobile, accessibility, Vercel deploy.
+- Phase 8: SEO (metadata, OG images, sitemap, robots, JSON-LD), GA4 + Hotjar (afterInteractive), Tawk.to (after first interaction), Lighthouse mobile ≥85, accessibility pass, deployment notes.
+- Merge `phase-6` into `main` when Phase 8 lands.
 
 ## How to verify
-`npm run dev`, then open `/`, `/dev/hero` and `/dev/brand`. `npx tsc --noEmit`, `npx eslint src scripts` and `npm run build` must all pass.
+`npm run dev`, then open `/`, `/developments`, `/admin/login`, `/portal/login`. `npx tsc --noEmit`, `npx eslint src scripts` and `npm run build` must all pass.
