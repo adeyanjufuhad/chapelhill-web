@@ -2,10 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { DevelopmentCard } from "@/components/site/DevelopmentCard";
-import { developments } from "@/content/developments";
+import { getDevelopments } from "@/lib/db/public";
 
-export function FeaturedDevelopments() {
-  const featured = developments.filter((d) => d.featured);
+export async function FeaturedDevelopments() {
+  const featured = (await getDevelopments()).filter((d) => d.featured);
 
   return (
     <section aria-labelledby="developments-heading" className="container-luxe py-24 sm:py-36">

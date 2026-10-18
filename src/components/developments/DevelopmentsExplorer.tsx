@@ -7,7 +7,7 @@ import { LayoutGrid, Map as MapIcon, RotateCcw } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { DevelopmentCard } from "@/components/site/DevelopmentCard";
 import { selectClass } from "@/components/site/InquiryForm";
-import { developments, statusLabel, type DevelopmentStatus } from "@/content/developments";
+import { statusLabel, type Development, type DevelopmentStatus } from "@/content/developments";
 import { formatNgnShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -17,12 +17,12 @@ const DevelopmentsMap = dynamic(() => import("@/components/site/DevelopmentsMap"
 });
 
 const PRICE_STEP = 10_000_000;
-const PRICE_MAX = Math.ceil(Math.max(...developments.map((d) => d.priceFromNgn)) / 100_000_000) * 100_000_000;
-const cities = ["all", ...new Set(developments.map((d) => d.city))];
-const types = ["all", ...new Set(developments.map((d) => d.propertyType))];
 const statuses: ("all" | DevelopmentStatus)[] = ["all", "for_sale", "coming_soon", "sold_out"];
 
-export function DevelopmentsExplorer() {
+export function DevelopmentsExplorer({ developments }: { developments: Development[] }) {
+  const PRICE_MAX = Math.max(100_000_000, Math.ceil(Math.max(...developments.map((d) => d.priceFromNgn)) / 100_000_000) * 100_000_000);
+  const cities = ["all", ...new Set(developments.map((d) => d.city))];
+  const types = ["all", ...new Set(developments.map((d) => d.propertyType))];
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -57,7 +57,7 @@ export function DevelopmentsExplorer() {
           d.priceFromNgn >= minPrice &&
           d.priceFromNgn <= maxPrice,
       ),
-    [city, type, status, minPrice, maxPrice],
+    [developments, city, type, status, minPrice, maxPrice],
   );
 
   const filtered = city !== "all" || type !== "all" || status !== "all" || minPrice > 0 || maxPrice < PRICE_MAX;
@@ -224,7 +224,7 @@ function Pill({ active, onClick, children }: { active: boolean; onClick: () => v
 }
 
 /** Static fallback rendered into the prerendered shell before search params are read. */
-export function DevelopmentsGridFallback() {
+export function DevelopmentsGridFallback({ developments }: { developments: Development[] }) {
   return (
     <ul className="mt-6 grid gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
       {developments.map((d) => (

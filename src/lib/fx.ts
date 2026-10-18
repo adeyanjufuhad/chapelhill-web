@@ -1,6 +1,7 @@
-import { fxRatesPlaceholder } from "@/content/placeholders";
-
 export type Currency = "NGN" | "USD" | "GBP";
+
+/** NGN per unit of each display currency. Set by the admin (no live FX feed). */
+export type Rates = { USD: number; GBP: number };
 
 export const currencies: { code: Currency; symbol: string; label: string }[] = [
   { code: "NGN", symbol: "₦", label: "Naira" },
@@ -8,16 +9,12 @@ export const currencies: { code: Currency; symbol: string; label: string }[] = [
   { code: "GBP", symbol: "£", label: "Pound sterling" },
 ];
 
-// Display-only rates (NGN per unit). PLACEHOLDER: set by the admin in Phase 6, no live FX feed.
-export const fxRates = { NGN: 1, USD: fxRatesPlaceholder.USD, GBP: fxRatesPlaceholder.GBP } satisfies Record<Currency, number>;
-export const fxUpdatedAt = fxRatesPlaceholder.updatedAt;
-
-export function convertFromNgn(amountNgn: number, to: Currency) {
-  return amountNgn / fxRates[to];
+export function convertFromNgn(amountNgn: number, to: Currency, rates: Rates) {
+  return to === "NGN" ? amountNgn : amountNgn / rates[to];
 }
 
-export function formatMoney(amountNgn: number, currency: Currency, { compact = false } = {}) {
-  const value = convertFromNgn(amountNgn, currency);
+export function formatMoney(amountNgn: number, currency: Currency, rates: Rates, { compact = false } = {}) {
+  const value = convertFromNgn(amountNgn, currency, rates);
   return new Intl.NumberFormat(currency === "NGN" ? "en-NG" : currency === "GBP" ? "en-GB" : "en-US", {
     style: "currency",
     currency,

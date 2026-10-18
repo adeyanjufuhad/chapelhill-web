@@ -2,9 +2,10 @@ import Counter from "@/components/reactbits/Counter";
 import ScrollReveal from "@/components/reactbits/ScrollReveal";
 import { Reveal } from "@/components/motion/Reveal";
 import { PlaceholderTag } from "@/components/site/Placeholder";
-import { trustStats } from "@/content/placeholders";
+import { getSiteStats } from "@/lib/db/public";
 
-export function Statement() {
+export async function Statement() {
+  const trustStats = await getSiteStats();
   return (
     <section aria-label="About Chapelhill" className="container-luxe py-28 sm:py-40">
       <p className="eyebrow">Chapelhill Multicompany International</p>

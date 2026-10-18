@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { company } from "@/content/company";
-import { developments } from "@/content/developments";
+import { getDevelopments } from "@/lib/db/public";
 import { footerNav } from "@/content/navigation";
 import { Logo } from "./Logo";
 import { NewsletterForm } from "./NewsletterForm";
@@ -8,8 +8,9 @@ import { PlaceholderTag } from "./Placeholder";
 
 const year = new Date().getFullYear();
 
-export function Footer() {
+export async function Footer() {
   const { address, phones, email } = company.contact;
+  const developments = await getDevelopments();
 
   return (
     <footer data-nav-tone="dark" className="theme-oxblood overflow-hidden">

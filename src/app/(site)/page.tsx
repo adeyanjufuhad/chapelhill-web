@@ -9,8 +9,10 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { TrackerTeaser } from "@/components/home/TrackerTeaser";
 import { Wordmark } from "@/components/home/Wordmark";
 import { stock } from "@/content/stock";
+import { getTestimonials } from "@/lib/db/public";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const testimonials = await getTestimonials();
   return (
     <>
       <BuildSequenceHero />
@@ -20,7 +22,7 @@ export default function HomePage() {
       <AbroadZoom />
       <ServicesFlow />
       <TrackerTeaser />
-      <Testimonials />
+      <Testimonials testimonials={testimonials} />
       <FaqSection />
       <ClosingCta />
     </>
