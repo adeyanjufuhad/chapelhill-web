@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Calculator, Check, ChevronRight, Video } from "lucide-react";
@@ -34,7 +35,29 @@ export async function generateMetadata({ params }: PageProps<"/developments/[slu
 const onRequest = <span className="text-muted-foreground">On request</span>;
 const dateFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
-export default async function DevelopmentPage({ params }: PageProps<"/developments/[slug]">) {
+// The URL param is read inside Suspense so the shared App Shell stays URL-independent;
+// generateStaticParams still prerenders every development page in full.
+export default function DevelopmentPage({ params }: PageProps<"/developments/[slug]">) {
+  return (
+    <Suspense fallback={<DetailSkeleton />}>
+      <DevelopmentDetail params={params} />
+    </Suspense>
+  );
+}
+
+function DetailSkeleton() {
+  return (
+    <section data-nav-tone="light" className="bg-cream">
+      <div className="container-luxe animate-pulse pt-36 pb-12">
+        <div className="bg-stone h-4 w-40 rounded-full" />
+        <div className="bg-stone mt-6 h-20 w-2/3 rounded-2xl" />
+        <div className="bg-stone mt-10 aspect-[16/10] w-full rounded-[22px]" />
+      </div>
+    </section>
+  );
+}
+
+async function DevelopmentDetail({ params }: { params: PageProps<"/developments/[slug]">["params"] }) {
   const { slug } = await params;
   const d = getDevelopment(slug);
   if (!d) notFound();

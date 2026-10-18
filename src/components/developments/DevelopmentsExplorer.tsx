@@ -67,7 +67,7 @@ export function DevelopmentsExplorer() {
       <div
         role="search"
         aria-label="Filter developments"
-        className="bg-ivory border-border sticky top-16 z-30 -mx-4 grid gap-5 rounded-none border-y px-4 py-5 sm:mx-0 sm:rounded-[22px] sm:border sm:px-6 md:top-[84px] lg:grid-cols-[auto_auto_1fr_1.2fr_auto] lg:items-end lg:gap-8"
+        className="bg-ivory border-border z-30 md:sticky -mx-4 grid gap-5 rounded-none border-y px-4 py-5 sm:mx-0 sm:rounded-[22px] sm:border sm:px-6 md:top-[84px] lg:grid-cols-[auto_auto_1fr_1.2fr_auto] lg:items-end lg:gap-8"
       >
         <fieldset>
           <legend className="text-muted-foreground mb-2 text-xs">Location</legend>

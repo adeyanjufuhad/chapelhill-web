@@ -276,3 +276,9 @@
   color: var(--oxblood);
   font-weight: 500;
 }
+
+/* Warm, muted map tiles to sit with the cream palette. */
+.leaflet-container .ch-map-tiles,
+.leaflet-container img.ch-map-tiles {
+  filter: grayscale(1) sepia(0.18) contrast(0.92) brightness(1.04);
+}
