@@ -28,12 +28,17 @@ export default function ThumbnailImageViewer({
   className?: string;
 }) {
   const [active, setActive] = React.useState(0);
+  // The first photo is the page's LCP: no fade, high priority. Later picks fade in.
+  const [picked, setPicked] = React.useState(false);
   const tabs = React.useRef<HTMLDivElement>(null);
   const id = React.useId().replace(/:/g, "");
   const current = images[active];
   const many = images.length > 1;
 
-  const choose = (n: number) => setActive((n + images.length) % Math.max(1, images.length));
+  const choose = (n: number) => {
+    setPicked(true);
+    setActive((n + images.length) % Math.max(1, images.length));
+  };
 
   return (
     <div className={cn("w-full", className)}>
@@ -50,8 +55,9 @@ export default function ThumbnailImageViewer({
             alt={current.alt}
             fill
             preload={active === 0}
+            fetchPriority={active === 0 ? "high" : undefined}
             sizes="(min-width: 1024px) 60vw, 100vw"
-            className="animate-in fade-in object-cover duration-500"
+            className={cn("object-cover", picked && "animate-in fade-in duration-500")}
           />
         )}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/45 to-transparent" />
