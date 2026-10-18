@@ -44,3 +44,12 @@ export const fxRatesPlaceholder = {
   updatedAt: "2026-10-18",
   placeholder: true,
 };
+
+// Illustrative construction progress, shown on development pages until the
+// admin dashboard posts real dated updates (Phase 6).
+export const progressPlaceholder = [
+  { date: "2026-09-12", title: "Roof covering installed", stage: "Roofing & windows", pct: 68 },
+  { date: "2026-08-22", title: "First-floor slab cast", stage: "Structure", pct: 52 },
+  { date: "2026-07-30", title: "Ground-floor blockwork complete", stage: "Structure", pct: 38 },
+  { date: "2026-06-18", title: "Foundation and ground beams complete", stage: "Foundation", pct: 20 },
+];
