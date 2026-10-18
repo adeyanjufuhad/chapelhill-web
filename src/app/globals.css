@@ -7,17 +7,20 @@
 /*
  * Chapelhill brand tokens.
  *
+ * Lead colour is oxblood, sampled from the logo ("HILL"). Gold is the accent,
+ * cream the page, ink the text. Forest green is a minor secondary accent only.
+ *
  * Contrast notes (WCAG AA, 4.5:1 for body text):
- *   gold #B8893B is 2.9:1 on cream and 3.1:1 on forest, so it is used for
- *   rules, icons, large display type and button fills only (ink text on a
- *   gold fill is 5.5:1). Small gold text uses --gold-ink on light sections
- *   (4.95:1) and --gold-light on forest sections (4.95:1).
- *   --oxblood is sampled from the logo ("HILL") and reserved for the mark.
+ *   cream on oxblood 12:1; blush on oxblood 8.7:1; gold-light on oxblood 6.6:1.
+ *   gold #B8893B is 2.9:1 on cream and 4.1:1 on oxblood, so it is used for
+ *   rules, icons, large display type and button fills (ink on gold is 5.5:1).
+ *   Small gold text uses --gold-ink on light sections and --gold-light on dark.
  */
 :root {
-  --forest: #2f4a3f;
-  --forest-deep: #23382f;
-  --forest-soft: #3b5a4d;
+  --oxblood: #5c1a1b;
+  --oxblood-deep: #3f1112;
+  --oxblood-soft: #7a2426;
+  --blush: #e2cfc9;
   --gold: #b8893b;
   --gold-ink: #8a6424;
   --gold-light: #dbb46b;
@@ -26,8 +29,10 @@
   --ink: #1a1a1a;
   --stone: #e7e2d9;
   --stone-ink: #5e5a52;
+  --forest: #2f4a3f;
+  --forest-deep: #23382f;
+  --forest-soft: #3b5a4d;
   --sage: #c9d3cc;
-  --oxblood: #5c1a1b;
 
   /* shadcn semantic tokens */
   --background: var(--cream);
@@ -36,14 +41,14 @@
   --card-foreground: var(--ink);
   --popover: var(--ivory);
   --popover-foreground: var(--ink);
-  --primary: var(--forest);
+  --primary: var(--oxblood);
   --primary-foreground: var(--cream);
   --secondary: var(--stone);
-  --secondary-foreground: var(--forest);
+  --secondary-foreground: var(--oxblood);
   --muted: var(--stone);
   --muted-foreground: var(--stone-ink);
   --accent: var(--stone);
-  --accent-foreground: var(--forest);
+  --accent-foreground: var(--oxblood);
   --destructive: #a63d32;
   --border: var(--stone);
   --input: #d8d1c4;
@@ -52,21 +57,23 @@
   --radius: 0.25rem;
 }
 
-/* Dark-green sections: wrap in .theme-forest and components flip automatically. */
+/* Dark brand sections: wrap in .theme-oxblood (or .theme-ink) and components flip automatically. */
+.theme-oxblood,
+.theme-ink,
 .theme-forest {
-  --background: var(--forest);
+  --background: var(--oxblood);
   --foreground: var(--cream);
-  --card: var(--forest-soft);
+  --card: var(--oxblood-soft);
   --card-foreground: var(--cream);
-  --popover: var(--forest-deep);
+  --popover: var(--oxblood-deep);
   --popover-foreground: var(--cream);
   --primary: var(--gold);
   --primary-foreground: var(--ink);
-  --secondary: var(--forest-soft);
+  --secondary: var(--oxblood-soft);
   --secondary-foreground: var(--cream);
-  --muted: var(--forest-soft);
-  --muted-foreground: var(--sage);
-  --accent: var(--forest-soft);
+  --muted: var(--oxblood-soft);
+  --muted-foreground: var(--blush);
+  --accent: var(--oxblood-soft);
   --accent-foreground: var(--cream);
   --border: rgb(248 246 242 / 0.14);
   --input: rgb(248 246 242 / 0.22);
@@ -75,7 +82,32 @@
   color: var(--foreground);
 }
 
+/* Near-black variant for footers and alternating dark bands. */
+.theme-ink {
+  --background: var(--ink);
+  --card: #262424;
+  --popover: #111;
+  --secondary: #2a2727;
+  --muted: #2a2727;
+  --muted-foreground: #cfc8bd;
+  --accent: #2a2727;
+}
+
+/* Minor green accent band, used sparingly. */
+.theme-forest {
+  --background: var(--forest);
+  --card: var(--forest-soft);
+  --popover: var(--forest-deep);
+  --secondary: var(--forest-soft);
+  --muted: var(--forest-soft);
+  --muted-foreground: var(--sage);
+  --accent: var(--forest-soft);
+}
+
 @theme inline {
+  --color-oxblood-deep: var(--oxblood-deep);
+  --color-oxblood-soft: var(--oxblood-soft);
+  --color-blush: var(--blush);
   --color-forest: var(--forest);
   --color-forest-deep: var(--forest-deep);
   --color-forest-soft: var(--forest-soft);

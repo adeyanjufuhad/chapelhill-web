@@ -5,7 +5,7 @@ Running list of items to request from the client. Anything marked **placeholder*
 ## Brand
 - [ ] **Logo as SVG** (or a PNG at least 2000px wide). The current header logo is a 238×47 PNG, which is too small for retina screens and print.
 - [ ] **Reversed logo** (cream or white) for use on dark green backgrounds. The current mark is near-black and oxblood (#5C1A1B), which disappears on dark sections.
-- [ ] Confirm the brand palette (forest green #2F4A3F, muted gold #B8893B, cream #F8F6F2). The logo's oxblood red is kept for the mark only.
+- [ ] Confirm the brand palette: oxblood red #5C1A1B (lead, taken from the logo), muted gold #B8893B (accent), cream #F8F6F2, ink #1A1A1A, with forest green #2F4A3F as a minor accent only.
 
 ## Contact
 - [ ] **Primary phone number.** The current site shows **+234 903 913 0207** in the header, footer and contact page, but **+234 803 286 5488** in the homepage contact block and team bios. Which is primary, and which one takes WhatsApp?

@@ -9,15 +9,17 @@ import { developments, statusLabel } from "@/content/developments";
 // Phase 1 brand preview. Replaced by the real home page in Phase 4.
 
 const swatches = [
-  { name: "Forest", token: "bg-forest", hex: "#2F4A3F", text: "text-cream" },
-  { name: "Forest deep", token: "bg-forest-deep", hex: "#23382F", text: "text-cream" },
+  { name: "Oxblood (lead)", token: "bg-oxblood", hex: "#5C1A1B", text: "text-cream" },
+  { name: "Oxblood deep", token: "bg-oxblood-deep", hex: "#3F1112", text: "text-cream" },
+  { name: "Oxblood soft", token: "bg-oxblood-soft", hex: "#7A2426", text: "text-cream" },
+  { name: "Blush (text on oxblood)", token: "bg-blush", hex: "#E2CFC9", text: "text-ink" },
   { name: "Gold", token: "bg-gold", hex: "#B8893B", text: "text-ink" },
   { name: "Gold ink (text on cream)", token: "bg-gold-ink", hex: "#8A6424", text: "text-cream" },
-  { name: "Gold light (text on forest)", token: "bg-gold-light", hex: "#DBB46B", text: "text-ink" },
+  { name: "Gold light (text on dark)", token: "bg-gold-light", hex: "#DBB46B", text: "text-ink" },
   { name: "Cream", token: "bg-cream", hex: "#F8F6F2", text: "text-ink" },
   { name: "Stone", token: "bg-stone", hex: "#E7E2D9", text: "text-ink" },
   { name: "Ink", token: "bg-ink", hex: "#1A1A1A", text: "text-cream" },
-  { name: "Oxblood (logo only)", token: "bg-oxblood", hex: "#5C1A1B", text: "text-cream" },
+  { name: "Forest (minor accent)", token: "bg-forest", hex: "#2F4A3F", text: "text-cream" },
 ];
 
 const formatNgn = (n: number) => `₦${(n / 1_000_000).toLocaleString("en-NG")}M`;
@@ -25,7 +27,7 @@ const formatNgn = (n: number) => `₦${(n / 1_000_000).toLocaleString("en-NG")}M
 export default function BrandPreview() {
   return (
     <main className="flex-1">
-      <section className="theme-forest">
+      <section className="theme-oxblood">
         <div className="container-luxe py-24 sm:py-32">
           <p className="eyebrow">Brand preview · Phase 1</p>
           <div className="rule-gold mt-6" />
@@ -96,7 +98,7 @@ export default function BrandPreview() {
         </ul>
       </section>
 
-      <section className="theme-forest">
+      <section className="theme-ink">
         <div className="container-luxe py-20">
           <p className="eyebrow">Diaspora FAQ</p>
           <h2 className="mt-4 text-4xl">Buying from abroad</h2>
