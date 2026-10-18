@@ -22,8 +22,7 @@ export function SectionHeading({
   return (
     <Reveal className={cn("max-w-2xl", align === "center" && "mx-auto text-center", className)}>
       <p className="eyebrow">{eyebrow}</p>
-      <div className={cn("rule-gold mt-5", align === "center" && "mx-auto")} />
-      <Heading className="mt-6 text-4xl leading-[1.08] sm:text-5xl lg:text-[3.4rem]">
+      <Heading className="mt-4 text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98] tracking-[-0.045em]">
         {title}
         {accent && <span className="accent-italic"> {accent}</span>}
       </Heading>

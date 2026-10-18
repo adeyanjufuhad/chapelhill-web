@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type Crumb = { label: string; href?: string };
 
-/** Dark page header. `data-hero` keeps the navbar transparent over it. */
+/** Dark page header. `data-nav-tone="dark"` keeps the navbar transparent over it. */
 export function PageHeader({
   eyebrow,
   title,
@@ -27,7 +27,7 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <section data-hero className={cn("theme-oxblood relative isolate overflow-hidden", className)}>
+    <section data-nav-tone="dark" className={cn("theme-oxblood relative isolate overflow-hidden", className)}>
       {image && (
         <>
           <Image src={image.src} alt={image.alt} fill preload sizes="100vw" className="-z-20 object-cover" />

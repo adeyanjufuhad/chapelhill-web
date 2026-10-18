@@ -54,6 +54,7 @@
   --input: #d8d1c4;
   --ring: var(--gold);
   --eyebrow: var(--gold-ink);
+  --accent-ink: var(--oxblood);
   --radius: 0.25rem;
 }
 
@@ -78,6 +79,7 @@
   --border: rgb(248 246 242 / 0.14);
   --input: rgb(248 246 242 / 0.22);
   --eyebrow: var(--gold-light);
+  --accent-ink: var(--gold-light);
   background-color: var(--background);
   color: var(--foreground);
 }
@@ -143,8 +145,10 @@
   --color-ring: var(--ring);
 
   --font-sans: var(--font-inter);
-  --font-display: var(--font-cormorant);
-  --font-heading: var(--font-cormorant);
+  /* Modern grotesk display (reference direction); Cormorant italic for accents. */
+  --font-display: var(--font-inter-tight);
+  --font-heading: var(--font-inter-tight);
+  --font-serif: var(--font-cormorant);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -171,7 +175,8 @@
   h2,
   h3,
   h4 {
-    @apply font-display font-medium tracking-tight text-balance;
+    @apply font-display font-medium text-balance;
+    letter-spacing: -0.035em;
   }
   ::selection {
     background: var(--gold);
@@ -198,11 +203,12 @@
   }
   /* Italic serif accent inside headings, e.g. "A home <em>worthy of you</em>". */
   .accent-italic {
-    @apply font-display italic;
-    color: var(--eyebrow);
+    @apply font-serif font-normal italic;
+    letter-spacing: -0.01em;
+    color: var(--accent-ink);
   }
   .container-luxe {
-    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
+    @apply mx-auto w-full max-w-[1680px] px-5 sm:px-[4vw];
   }
 }
 

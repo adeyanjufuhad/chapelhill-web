@@ -11,8 +11,8 @@ export function Testimonials() {
   const go = (delta: number) => setActive((i) => (i + delta + testimonials.length) % testimonials.length);
 
   return (
-    <section aria-labelledby="testimonials-heading" aria-roledescription="carousel" className="theme-ink">
-      <div className="container-luxe py-24 sm:py-32">
+    <section aria-labelledby="testimonials-heading" aria-roledescription="carousel" className="bg-ivory border-border border-y">
+      <div className="container-luxe py-24 sm:py-36">
         <div className="flex items-center justify-between gap-6">
           <div>
             <p className="eyebrow">
@@ -27,7 +27,7 @@ export function Testimonials() {
               type="button"
               onClick={() => go(-1)}
               aria-label="Previous testimonial"
-              className="border-border hover:border-gold hover:text-gold-light inline-flex size-11 items-center justify-center rounded-full border transition-colors"
+              className="border-ink/15 hover:border-oxblood hover:text-oxblood inline-flex size-11 items-center justify-center rounded-full border transition-colors"
             >
               <ArrowLeft className="size-4" aria-hidden="true" />
             </button>
@@ -35,7 +35,7 @@ export function Testimonials() {
               type="button"
               onClick={() => go(1)}
               aria-label="Next testimonial"
-              className="border-border hover:border-gold hover:text-gold-light inline-flex size-11 items-center justify-center rounded-full border transition-colors"
+              className="border-ink/15 hover:border-oxblood hover:text-oxblood inline-flex size-11 items-center justify-center rounded-full border transition-colors"
             >
               <ArrowRight className="size-4" aria-hidden="true" />
             </button>
@@ -54,10 +54,10 @@ export function Testimonials() {
                 i === active ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
               )}
             >
-              <span aria-hidden="true" className="font-display text-gold block text-7xl leading-none">
+              <span aria-hidden="true" className="font-serif text-oxblood block text-8xl leading-none">
                 “
               </span>
-              <blockquote className="font-display -mt-4 text-3xl leading-snug text-balance sm:text-4xl lg:text-5xl">
+              <blockquote className="font-display -mt-6 text-[clamp(1.8rem,3.6vw,3.4rem)] leading-[1.12] font-medium tracking-[-0.035em] text-balance">
                 {t.quote}
               </blockquote>
               <figcaption className="mt-8 flex items-center gap-4 text-sm">
@@ -85,7 +85,7 @@ export function Testimonials() {
               <span
                 className={cn(
                   "block h-px transition-all duration-500",
-                  i === active ? "bg-gold w-12" : "bg-cream/30 group-hover:bg-cream/60 w-6",
+                  i === active ? "bg-oxblood w-12" : "bg-ink/20 group-hover:bg-ink/40 w-6",
                 )}
               />
             </button>

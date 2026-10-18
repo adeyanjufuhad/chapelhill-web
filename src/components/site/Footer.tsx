@@ -12,7 +12,7 @@ export function Footer() {
   const { address, phones, email } = company.contact;
 
   return (
-    <footer className="theme-ink">
+    <footer data-nav-tone="dark" className="theme-oxblood overflow-hidden">
       <div className="container-luxe py-20">
         <div className="grid gap-14 lg:grid-cols-[1.2fr_2fr]">
           <div>
@@ -70,7 +70,14 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-border text-muted-foreground mt-16 flex flex-col gap-4 border-t pt-8 text-xs sm:flex-row sm:items-center sm:justify-between">
+        <p
+          aria-hidden="true"
+          className="font-display text-cream/[0.07] mt-16 -mb-6 text-center text-[18vw] leading-[0.8] font-semibold tracking-[-0.065em] select-none sm:-mb-10"
+        >
+          Chapelhill
+        </p>
+
+        <div className="border-border text-muted-foreground relative mt-0 flex flex-col gap-4 border-t pt-8 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} {company.name}. All rights reserved.
           </p>

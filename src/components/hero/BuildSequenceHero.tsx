@@ -1,34 +1,23 @@
 import Image from "next/image";
 import { readBuildManifest } from "@/lib/build-manifest.server";
-import { BlueprintDrawing } from "./BlueprintDrawing";
-import { BuildSequenceScrub, StaticHeroContent } from "./BuildSequenceScrub";
+import { BuildSequenceScrub, StaticBuildHero } from "./BuildSequenceScrub";
 
 /**
  * Scroll-scrubbed construction hero. Everything it needs comes from
  * public/build/manifest.json (frame counts, sizes, poster, MP4 fallback).
- * With no manifest yet, it renders a static blueprint hero.
+ * With no manifest yet, it renders the static hero with a blueprint drawing.
  */
 export function BuildSequenceHero() {
   const manifest = readBuildManifest();
-
-  if (!manifest) {
-    return (
-      <section data-hero aria-label="Chapelhill" className="theme-oxblood relative min-h-svh overflow-hidden">
-        <BlueprintDrawing animate className="text-cream absolute top-1/2 right-[-10%] w-[min(110vw,900px)] -translate-y-1/2 opacity-40 md:right-0" />
-        <StaticHeroContent />
-      </section>
-    );
-  }
-
-  const poster = manifest.poster ?? "/build/poster.webp";
+  if (!manifest) return <StaticBuildHero />;
 
   return (
     <BuildSequenceScrub
       manifest={manifest}
       poster={
         <Image
-          src={poster}
-          alt="An empty fenced plot of red laterite soil in a gated Lekki estate at golden hour, before construction begins"
+          src={manifest.poster ?? "/build/poster.webp"}
+          alt="An empty fenced plot of red laterite soil in a gated estate at golden hour, before construction begins"
           fill
           preload
           fetchPriority="high"

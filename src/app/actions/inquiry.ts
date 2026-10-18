@@ -65,7 +65,8 @@ export async function submitInquiry(_prev: InquiryState, formData: FormData): Pr
   // NOT PERSISTED YET: Phase 6 inserts into Supabase `inquiries` / `inspection_requests`
   // and sends a notification to the sales inbox with Resend.
   if (process.env.NODE_ENV !== "production") {
-    const { company: _honeypot, ...data } = parsed.data;
+    const data: Partial<typeof parsed.data> = { ...parsed.data };
+    delete data.company;
     console.info("[inquiry] would save", data);
   }
 

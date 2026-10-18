@@ -35,7 +35,7 @@ export function FaqSection() {
           <Accordion type="single" collapsible className="border-border border-t">
             {diasporaFaq.map((f, i) => (
               <AccordionItem key={f.question} value={`faq-${i}`} className="border-border">
-                <AccordionTrigger className="font-display hover:text-oxblood py-6 text-left text-xl leading-snug hover:no-underline sm:text-2xl [&>svg]:text-gold">
+                <AccordionTrigger className="font-display hover:text-oxblood py-6 text-left text-lg leading-snug font-medium tracking-[-0.02em] hover:no-underline sm:text-xl [&>svg]:text-oxblood">
                   {f.question}
                 </AccordionTrigger>
                 <AccordionContent className="text-muted-foreground max-w-2xl pb-7 text-base leading-relaxed">

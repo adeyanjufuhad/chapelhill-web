@@ -9,9 +9,10 @@ Third-party UI components used in this project, with source and license. Every i
 | Lucide | Icons | https://lucide.dev | ISC |
 | React Bits: Counter (TS + Tailwind) | Trust stats odometer | https://reactbits.dev/components/counter | MIT + Commons Clause |
 | React Bits: Staggered Menu (TS + Tailwind) | Mobile navigation, restyled to cream and oxblood with serif items; added `inert`, Escape to close and client-side links | https://reactbits.dev/components/staggered-menu | MIT + Commons Clause |
-| React Bits: Spotlight Card (TS + Tailwind) | Development cards, light theme recoloured to ivory, stone and gold | https://reactbits.dev/components/spotlight-card | MIT + Commons Clause |
 | React Bits: Scroll Stack (TS + Tailwind) | Services process steps | https://reactbits.dev/components/scroll-stack | MIT + Commons Clause |
 | React Bits: Masonry (TS + Tailwind, copied manually; hugeicons swapped for Lucide) | Gallery | https://reactbits.dev/components/masonry | MIT + Commons Clause |
+| React Bits: Flowing Menu (TS + Tailwind, copied manually; hugeicons swapped for Lucide) | Home services rows with image marquees | https://reactbits.dev/components/flowing-menu | MIT + Commons Clause |
+| React Bits: Scroll Reveal (TS + Tailwind) | Home statement text reveal | https://reactbits.dev/text-animations/scroll-reveal | MIT + Commons Clause |
 | React Bits: Split Text (TS + Tailwind) | Installed for section headings; not yet used | https://reactbits.dev/text-animations/split-text | MIT + Commons Clause |
 
 ## Libraries
@@ -26,7 +27,8 @@ Third-party UI components used in this project, with source and license. Every i
 ## Fonts
 | Font | License |
 |---|---|
-| Cormorant Garamond | SIL Open Font License 1.1 |
+| Inter Tight (display) | SIL Open Font License 1.1 |
+| Cormorant Garamond (italic accents) | SIL Open Font License 1.1 |
 | Inter | SIL Open Font License 1.1 |
 
 ## Imagery
