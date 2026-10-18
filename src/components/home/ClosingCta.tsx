@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PillLink } from "@/components/site/PillLink";
 import { Reveal } from "@/components/motion/Reveal";
 import { WhatsAppIcon } from "@/components/site/WhatsAppIcon";
 import { company } from "@/content/company";
@@ -32,18 +32,12 @@ export function ClosingCta() {
             respond within 24 hours.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" className="h-12 rounded-full px-7">
-              <a href={whatsappLink("Hello Chapelhill, I’d like to discuss buying a home.")} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="size-4" />
-                Chat on WhatsApp
-              </a>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="border-ink/20 bg-cream/60 h-12 rounded-full px-6 backdrop-blur-sm">
-              <a href={`tel:${primary.e164}`}>
-                <Phone aria-hidden="true" />
-                {primary.display}
-              </a>
-            </Button>
+            <PillLink href={whatsappLink("Hello Chapelhill, I’d like to discuss buying a home.")} external icon={<WhatsAppIcon className="size-4" />}>
+              Chat on WhatsApp
+            </PillLink>
+            <PillLink href={`tel:${primary.e164}`} external={false} variant="light" icon={<Phone className="size-4" aria-hidden="true" />}>
+              {primary.display}
+            </PillLink>
           </div>
         </Reveal>
       </div>

@@ -1,8 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Camera, FileText, Gauge } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PillLink } from "@/components/site/PillLink";
 import { Reveal } from "@/components/motion/Reveal";
+import { SplitHeading } from "@/components/motion/SplitHeading";
 import { PlaceholderTag } from "@/components/site/Placeholder";
 import { stock } from "@/content/stock";
 
@@ -28,9 +28,12 @@ export function TrackerTeaser() {
       <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-24">
         <Reveal>
           <p className="eyebrow">Live construction tracker</p>
-          <h2 id="tracker-heading" className="mt-4 text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98] tracking-[-0.045em]">
-            Watch your home rise, <span className="accent-italic text-oxblood">update by update.</span>
-          </h2>
+          <SplitHeading
+            id="tracker-heading"
+            text="Watch your home rise,"
+            accent="update by update."
+            className="mt-4 text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98] tracking-[-0.045em]"
+          />
           <p className="text-muted-foreground mt-6 max-w-md text-lg leading-relaxed">
             Every buyer gets a private client portal to follow their home from anywhere in the world.
           </p>
@@ -47,9 +50,9 @@ export function TrackerTeaser() {
               </li>
             ))}
           </ul>
-          <Button asChild variant="outline" size="lg" className="border-ink/20 mt-10 h-12 rounded-full bg-transparent px-6">
-            <Link href="/portal">Explore the client portal</Link>
-          </Button>
+          <PillLink href="/portal/login" variant="light" className="mt-10">
+            Explore the client portal
+          </PillLink>
         </Reveal>
 
         <Reveal delay={150} className="relative pb-24 sm:pb-0">
