@@ -6,7 +6,10 @@ import { cn } from "@/lib/utils";
 
 type Crumb = { label: string; href?: string };
 
-/** Dark page header. `data-nav-tone="dark"` keeps the navbar transparent over it. */
+/**
+ * Light, airy page header in the home-page style: large tight headline on
+ * cream, optional photo framed in a rounded window below.
+ */
 export function PageHeader({
   eyebrow,
   title,
@@ -22,30 +25,24 @@ export function PageHeader({
   accent?: ReactNode;
   intro?: ReactNode;
   crumbs?: Crumb[];
-  image?: { src: string; alt: string };
+  image?: { src: string; alt: string; position?: string };
   children?: ReactNode;
   className?: string;
 }) {
   return (
-    <section data-nav-tone="dark" className={cn("theme-oxblood relative isolate overflow-hidden", className)}>
-      {image && (
-        <>
-          <Image src={image.src} alt={image.alt} fill preload sizes="100vw" className="-z-20 object-cover" />
-          <div className="from-oxblood-deep/95 via-oxblood-deep/80 to-oxblood-deep/40 absolute inset-0 -z-10 bg-gradient-to-r" />
-        </>
-      )}
-      <div className="container-luxe pt-32 pb-16 sm:pt-40 sm:pb-24">
+    <section data-nav-tone="light" className={cn("bg-cream", className)}>
+      <div className="container-luxe pt-28 pb-12 sm:pt-36 sm:pb-16">
         {crumbs.length > 0 && (
-          <nav aria-label="Breadcrumb" className="mb-10">
-            <ol className="text-muted-foreground flex flex-wrap items-center gap-1.5 text-xs tracking-[0.12em] uppercase">
+          <nav aria-label="Breadcrumb" className="mb-8">
+            <ol className="text-muted-foreground flex flex-wrap items-center gap-1.5 text-xs">
               {[{ label: "Home", href: "/" }, ...crumbs].map((c, i, all) => (
                 <li key={c.label} className="flex items-center gap-1.5">
                   {c.href && i < all.length - 1 ? (
-                    <Link href={c.href} className="hover:text-gold-light transition-colors">
+                    <Link href={c.href} className="hover:text-oxblood transition-colors">
                       {c.label}
                     </Link>
                   ) : (
-                    <span aria-current="page" className="text-cream">
+                    <span aria-current="page" className="text-ink">
                       {c.label}
                     </span>
                   )}
@@ -55,15 +52,38 @@ export function PageHeader({
             </ol>
           </nav>
         )}
-        <p className="eyebrow">{eyebrow}</p>
-        <div className="rule-gold mt-5" />
-        <h1 className="mt-6 max-w-3xl text-5xl leading-[1.04] sm:text-6xl lg:text-7xl">
-          {title}
-          {accent && <span className="accent-italic"> {accent}</span>}
-        </h1>
-        {intro && <p className="text-muted-foreground mt-6 max-w-2xl text-base leading-relaxed sm:text-lg">{intro}</p>}
-        {children && <div className="mt-10">{children}</div>}
+        <div className="grid items-end gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
+          <div>
+            <p className="eyebrow">{eyebrow}</p>
+            <h1 className="mt-4 text-[clamp(2.8rem,7.4vw,7rem)] leading-[0.95] tracking-[-0.05em]">
+              {title}
+              {accent && <span className="accent-italic"> {accent}</span>}
+            </h1>
+          </div>
+          {(intro || children) && (
+            <div className="pb-2">
+              {intro && <p className="text-muted-foreground max-w-md text-base leading-relaxed sm:text-lg">{intro}</p>}
+              {children && <div className="mt-6">{children}</div>}
+            </div>
+          )}
+        </div>
       </div>
+      {image && (
+        <div className="px-4 pb-4 sm:px-[4vw] sm:pb-6">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[22px] sm:aspect-[21/9] sm:rounded-[32px]">
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              preload
+              fetchPriority="high"
+              sizes="96vw"
+              className="object-cover"
+              style={{ objectPosition: image.position ?? "50% 50%" }}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
